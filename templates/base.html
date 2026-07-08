@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ titulo or "Inquilino" }}</title>
+
+  <link rel="stylesheet" href="/static/css/base.css">
+  {% block styles %}{% endblock %}
+</head>
+
+<body>
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <div class="brand">
+        <div class="brand-icon">
+          <i data-lucide="building-2"></i>
+        </div>
+
+        <div class="brand-text">
+          <h1>Inquilino</h1>
+          <p>Gestão Imobiliária</p>
+        </div>
+      </div>
+    </div>
+
+    <nav class="sidebar-content">
+      <div class="sidebar-group">
+        <p class="sidebar-label">Menu Principal</p>
+
+        <ul class="sidebar-menu">
+          <li>
+            <a href="/dashboard" class="sidebar-link {{ 'active' if pagina == 'dashboard' else '' }}">
+              <i data-lucide="home"></i>
+              <span>Dashboard</span>
+            </a>
+          </li>
+
+          <li>
+            <a href="/imoveis" class="sidebar-link {{ 'active' if pagina == 'imoveis' else '' }}">
+              <i data-lucide="building-2"></i>
+              <span>Imóveis</span>
+            </a>
+          </li>
+
+          <li>
+            <a href="/inquilinos" class="sidebar-link {{ 'active' if pagina == 'inquilinos' else '' }}">
+              <i data-lucide="users"></i>
+              <span>Inquilinos</span>
+            </a>
+          </li>
+
+          <li>
+            <a href="/pagamentos" class="sidebar-link {{ 'active' if pagina == 'pagamentos' else '' }}">
+              <i data-lucide="dollar-sign"></i>
+              <span>Pagamentos</span>
+            </a>
+          </li>
+
+          <li>
+            <a href="/contratos" class="sidebar-link {{ 'active' if pagina == 'contratos' else '' }}">
+              <i data-lucide="file-text"></i>
+              <span>Contratos</span>
+            </a>
+          </li>
+
+          <li>
+            <a href="/calendario" class="sidebar-link {{ 'active' if pagina == 'calendario' else '' }}">
+              <i data-lucide="calendar"></i>
+              <span>Calendário</span>
+            </a>
+          </li>
+
+          <li>
+            <a href="/historico" class="sidebar-link {{ 'active' if pagina == 'historico' else '' }}">
+              <i data-lucide="history"></i>
+              <span>Histórico</span>
+            </a>
+          </li>
+
+          <li>
+            <a href="/configuracoes" class="sidebar-link {{ 'active' if pagina == 'configuracoes' else '' }}">
+              <i data-lucide="settings"></i>
+              <span>Configurações</span>
+            </a>
+          </li>
+        </ul>
+      </div>
+    </nav>
+  </aside>
+
+  <div class="app">
+    <header class="topbar">
+      <span class="menu-icon">
+        <i data-lucide="panel-left"></i>
+      </span>
+    </header>
+
+    <main class="content">
+      {% block content %}{% endblock %}
+    </main>
+  </div>
+
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script src="/static/js/script.js"></script>
+  {% block scripts %}{% endblock %}
+
+  <script>
+    lucide.createIcons();
+  </script>
+</body>
+</html>

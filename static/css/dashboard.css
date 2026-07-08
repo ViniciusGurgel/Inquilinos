@@ -1,0 +1,281 @@
+.dashboard-page {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+.page-title h1 {
+  margin: 0;
+  font-size: 30px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.page-title p {
+  margin: 8px 0 0;
+  color: var(--muted);
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 24px;
+}
+
+.stats-card {
+  display: flex;
+  min-height: 112px;
+  overflow: hidden;
+  border-radius: 8px;
+  background: #1d2a3d;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.28);
+}
+
+.stats-info {
+  flex: 1;
+  padding: 24px;
+}
+
+.stats-info span {
+  display: block;
+  color: var(--muted);
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.stats-info strong {
+  display: block;
+  margin-top: 14px;
+  color: var(--text);
+  font-size: 30px;
+  line-height: 1;
+}
+
+.stats-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 96px;
+  color: #ffffff;
+}
+
+.stats-icon svg {
+  width: 42px;
+  height: 42px;
+}
+
+.stats-blue {
+  background: #2f7df6;
+}
+
+.stats-green {
+  background: #19b258;
+}
+
+.stats-orange {
+  background: #f6a51a;
+}
+
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+}
+
+.dashboard-card {
+  padding: 26px;
+  border: 1px solid #2b3a52;
+  border-radius: 8px;
+  background: #1d2a3d;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.28);
+}
+
+.dashboard-card h2 {
+  margin: 0 0 22px;
+  font-size: 24px;
+  color: var(--text);
+}
+
+.empty-text {
+  margin: 0;
+  color: var(--muted);
+}
+
+.vencimentos-list,
+.resumo-list,
+.interessados-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.vencimento-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 16px 0;
+  border-bottom: 1px solid #2b3a52;
+}
+
+.vencimento-item:first-child {
+  padding-top: 0;
+}
+
+.vencimento-item:last-child {
+  padding-bottom: 0;
+  border-bottom: 0;
+}
+
+.vencimento-item strong,
+.interessado-item strong {
+  display: block;
+  color: var(--text);
+}
+
+.vencimento-item span {
+  display: block;
+  margin-top: 5px;
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.vencimento-valor {
+  text-align: right;
+}
+
+.resumo-list {
+  gap: 18px;
+}
+
+.resumo-list div {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.resumo-list span {
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.resumo-total {
+  margin-top: 6px;
+  padding-top: 18px;
+  border-top: 1px solid #2b3a52;
+}
+
+.resumo-total span {
+  color: var(--text);
+  font-weight: 600;
+}
+
+.text-success {
+  color: #22c55e;
+}
+
+.text-warning {
+  color: #f6a51a;
+}
+
+.text-danger {
+  color: #ef4444;
+}
+
+.interessados-card {
+  margin-top: 8px;
+}
+
+.interessados-list {
+  gap: 12px;
+}
+
+.interessado-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 16px;
+  border: 1px solid #2b3a52;
+  border-radius: 8px;
+  background: #1b2739;
+  transition: background 0.2s ease;
+}
+
+.interessado-item:hover {
+  background: #223049;
+}
+
+.telefone-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 8px;
+  color: var(--muted);
+  font-size: 14px;
+  text-decoration: none;
+}
+
+.telefone-link:hover {
+  color: var(--primary);
+}
+
+.telefone-link svg {
+  width: 14px;
+  height: 14px;
+}
+
+.interessado-item p {
+  margin: 8px 0 0;
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.delete-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: #ef4444;
+  cursor: pointer;
+}
+
+.delete-button:hover {
+  background: rgba(239, 68, 68, 0.12);
+}
+
+.delete-button svg {
+  width: 18px;
+  height: 18px;
+}
+
+@media (max-width: 1200px) {
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 900px) {
+  .dashboard-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 620px) {
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .vencimento-item,
+  .interessado-item {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .vencimento-valor {
+    text-align: left;
+  }
+}

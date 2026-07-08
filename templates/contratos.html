@@ -1,0 +1,228 @@
+{% extends "base.html" %}
+
+{% block styles %}
+<link rel="stylesheet" href="/static/css/contratos.css">
+{% endblock %}
+
+{% block content %}
+<section class="contratos-page">
+  <div class="page-header">
+    <div>
+      <h1>Contratos</h1>
+      <p>Gerencie contratos de locação</p>
+    </div>
+
+    <button type="button" class="primary-button" data-open-modal>
+      <i data-lucide="plus"></i>
+      Novo Contrato
+    </button>
+  </div>
+
+  <form method="get" action="/contratos" class="search-box">
+    <i data-lucide="search"></i>
+    <input
+      type="text"
+      name="busca"
+      value="{{ busca or '' }}"
+      placeholder="Buscar por inquilino, imóvel ou status..."
+    >
+  </form>
+
+  {% if contratos %}
+    <div class="contratos-grid">
+      {% for contrato in contratos %}
+        <article class="contrato-card">
+          <div class="contrato-header">
+            <div class="contrato-title">
+              <div class="contrato-icon">
+                <i data-lucide="file-text"></i>
+              </div>
+
+              <div>
+                <h2>{{ contrato.inquilino_nome }}</h2>
+                <p>{{ contrato.imovel_nome }}</p>
+              </div>
+            </div>
+
+            {% if contrato.status == "ativo" %}
+              <span class="status-badge status-ativo">Ativo</span>
+            {% else %}
+              <span class="status-badge status-inativo">Encerrado</span>
+            {% endif %}
+          </div>
+
+          <div class="contrato-info">
+            <div>
+              <span>Início do Contrato</span>
+              <strong>{{ contrato.data_inicio }}</strong>
+            </div>
+
+            <div>
+              <span>Fim do Contrato</span>
+              <strong>{{ contrato.data_fim }}</strong>
+            </div>
+
+            <div>
+              <span>Valor Mensal</span>
+              <strong>{{ contrato.valor_aluguel }}</strong>
+            </div>
+
+            <div>
+              <span>Vencimento</span>
+              <strong>Dia {{ contrato.dia_vencimento }}</strong>
+            </div>
+          </div>
+
+          <div class="contrato-actions">
+            {% if contrato.tem_pdf %}
+              <a href="/contratos/{{ contrato.id }}/arquivo" target="_blank" class="secondary-button">
+                <i data-lucide="download"></i>
+                Abrir PDF
+              </a>
+            {% else %}
+              <span class="pdf-empty">Sem PDF</span>
+            {% endif %}
+
+            <form method="post" action="/contratos/{{ contrato.id }}/encerrar">
+              <button type="submit" class="icon-button" title="Encerrar contrato">
+                <i data-lucide="x-circle"></i>
+              </button>
+            </form>
+
+            <form method="post" action="/contratos/{{ contrato.id }}/deletar">
+              <button type="submit" class="icon-button danger-button" title="Excluir contrato">
+                <i data-lucide="trash-2"></i>
+              </button>
+            </form>
+          </div>
+        </article>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="empty-state">
+      <div>
+        <i data-lucide="file-text"></i>
+      </div>
+      <h2>Nenhum contrato cadastrado</h2>
+      <p>Clique em novo contrato para criar o primeiro contrato.</p>
+    </div>
+  {% endif %}
+</section>
+
+<div class="modal-backdrop" data-modal>
+  <div class="modal-card">
+    <div class="modal-header">
+      <h2>Novo Contrato</h2>
+
+      <button type="button" class="close-button" data-close-modal>
+        <i data-lucide="x"></i>
+      </button>
+    </div>
+
+    <form method="post" action="/contratos/criar" enctype="multipart/form-data" class="modal-form">
+      <label>
+        Inquilino
+        <div class="select-wrapper">
+          <select name="inquilino_id" required>
+            <option value="" disabled selected hidden>Selecione o inquilino</option>
+            {% for inquilino in inquilinos %}
+              <option value="{{ inquilino.id }}">{{ inquilino.nome }}</option>
+            {% endfor %}
+          </select>
+
+          <i data-lucide="chevron-down"></i>
+        </div>
+      </label>
+
+      <label>
+        Imóvel
+        <div class="select-wrapper">
+          <select name="imovel_id" required>
+            <option value="" disabled selected hidden>Selecione o imóvel</option>
+            {% for imovel in imoveis %}
+              <option value="{{ imovel.id }}">
+                {{ imovel.nome }}
+                {% if imovel.condominio_nome %}
+                  - {{ imovel.condominio_nome }}
+                {% endif %}
+              </option>
+            {% endfor %}
+          </select>
+
+          <i data-lucide="chevron-down"></i>
+        </div>
+      </label>
+
+      <label>
+        Data de Início
+        <input type="date" name="data_inicio" required>
+      </label>
+
+      <label>
+        Data de Fim
+        <input type="date" name="data_fim">
+      </label>
+
+      <label>
+        Valor do Aluguel
+        <input
+          type="number"
+          name="valor_aluguel"
+          min="0"
+          step="0.01"
+          placeholder="Ex: 1200"
+          required
+        >
+      </label>
+
+      <label>
+        Dia de Vencimento
+        <input
+          type="number"
+          name="dia_vencimento"
+          min="1"
+          max="31"
+          placeholder="Ex: 10"
+          required
+        >
+      </label>
+
+      <label>
+        Arquivo do Contrato
+        <input type="file" name="arquivo_pdf" accept="application/pdf,.pdf">
+      </label>
+
+      <label>
+        Observação
+        <textarea name="observacao" placeholder="Observações sobre o contrato"></textarea>
+      </label>
+
+      <button type="submit" class="submit-button">
+        Adicionar Contrato
+      </button>
+    </form>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  const modal = document.querySelector("[data-modal]");
+  const openModalButton = document.querySelector("[data-open-modal]");
+  const closeModalButton = document.querySelector("[data-close-modal]");
+
+  openModalButton.addEventListener("click", () => {
+    modal.classList.add("is-open");
+  });
+
+  closeModalButton.addEventListener("click", () => {
+    modal.classList.remove("is-open");
+  });
+
+  modal.addEventListener("click", (event) => {
+    if (event.target === modal) {
+      modal.classList.remove("is-open");
+    }
+  });
+</script>
+{% endblock %}
