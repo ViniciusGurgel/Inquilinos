@@ -1,5 +1,5 @@
 ('C:\\Users\\VINICIUS\\Documents\\Inquilinos\\build\\InquilinosApp\\InquilinosApp.exe',
- True,
+ False,
  False,
  True,
  ['C:\\Users\\VINICIUS\\Documents\\Inquilinos\\inquilinos_app.ico'],
@@ -70,8 +70,8 @@
  [],
  False,
  False,
- 1783632735,
- [('run.exe',
-   'C:\\Users\\VINICIUS\\Documents\\Inquilinos\\.venv\\Lib\\site-packages\\PyInstaller\\bootloader\\Windows-64bit-intel\\run.exe',
+ 1783693272,
+ [('runw.exe',
+   'C:\\Users\\VINICIUS\\Documents\\Inquilinos\\.venv\\Lib\\site-packages\\PyInstaller\\bootloader\\Windows-64bit-intel\\runw.exe',
    'EXECUTABLE')],
  'C:\\Users\\VINICIUS\\AppData\\Local\\Programs\\Python\\Python313\\python313.dll')

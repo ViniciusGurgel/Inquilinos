@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block styles %}
+<link rel="stylesheet" href="/static/css/em_breve.css">
+{% endblock %}
+
+{% block content %}
+<section class="coming-soon-page">
+  <div class="coming-soon-card">
+    <div class="coming-soon-icon">
+      <i data-lucide="{{ icone }}"></i>
+    </div>
+
+    <span class="coming-soon-label">Em desenvolvimento</span>
+
+    <h1>{{ recurso }}</h1>
+
+    <p>
+      {{ descricao }}
+    </p>
+
+    <div class="coming-soon-info">
+      <i data-lucide="hammer"></i>
+      <span>Esse recurso ainda não está disponível, mas será implementado em breve.</span>
+    </div>
+
+    <a href="/dashboard" class="back-button">
+      <i data-lucide="arrow-left"></i>
+      Voltar para o Dashboard
+    </a>
+  </div>
+</section>
+{% endblock %}

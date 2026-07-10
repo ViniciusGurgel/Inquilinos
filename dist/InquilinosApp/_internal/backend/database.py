@@ -15,6 +15,9 @@ CONTRATOS_DIR.mkdir(parents=True, exist_ok=True)
 COMPROVANTES_DIR = APP_DATA_DIR / "comprovantes"
 COMPROVANTES_DIR.mkdir(parents=True, exist_ok=True)
 
+FOTOS_IMOVEIS_DIR = APP_DATA_DIR / "fotos_imoveis"
+FOTOS_IMOVEIS_DIR.mkdir(parents=True, exist_ok=True)
+
 
 def get_connection():
     conn = sqlite3.connect(DB_PATH)
@@ -92,6 +95,14 @@ def init_db():
             nome TEXT NOT NULL,
             telefone TEXT,
             descricao TEXT
+        );
+                           
+        CREATE TABLE IF NOT EXISTS imovel_fotos (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            imovel_id INTEGER NOT NULL,
+            arquivo TEXT NOT NULL,
+            created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY (imovel_id) REFERENCES imoveis(id) ON DELETE CASCADE
         );
         """)
 

@@ -65,13 +65,6 @@
           </li>
 
           <li>
-            <a href="/calendario" class="sidebar-link {{ 'active' if pagina == 'calendario' else '' }}">
-              <i data-lucide="calendar"></i>
-              <span>Calendário</span>
-            </a>
-          </li>
-
-          <li>
             <a href="/historico" class="sidebar-link {{ 'active' if pagina == 'historico' else '' }}">
               <i data-lucide="history"></i>
               <span>Histórico</span>
@@ -102,11 +95,30 @@
   </div>
 
   <script src="https://unpkg.com/lucide@latest"></script>
-  <script src="/static/js/script.js"></script>
   {% block scripts %}{% endblock %}
 
   <script>
     lucide.createIcons();
+  </script>
+  <script>
+    (function () {
+      function enviarHeartbeat() {
+        fetch("/app-heartbeat", {
+          method: "POST",
+          keepalive: true
+        }).catch(() => {});
+      }
+
+      enviarHeartbeat();
+
+      setInterval(enviarHeartbeat, 5000);
+
+      window.addEventListener("pagehide", () => {
+        if (navigator.sendBeacon) {
+          navigator.sendBeacon("/app-heartbeat");
+        }
+      });
+    })();
   </script>
 </body>
 </html>

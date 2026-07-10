@@ -100,5 +100,25 @@
   <script>
     lucide.createIcons();
   </script>
+  <script>
+    (function () {
+      function enviarHeartbeat() {
+        fetch("/app-heartbeat", {
+          method: "POST",
+          keepalive: true
+        }).catch(() => {});
+      }
+
+      enviarHeartbeat();
+
+      setInterval(enviarHeartbeat, 5000);
+
+      window.addEventListener("pagehide", () => {
+        if (navigator.sendBeacon) {
+          navigator.sendBeacon("/app-heartbeat");
+        }
+      });
+    })();
+  </script>
 </body>
 </html>

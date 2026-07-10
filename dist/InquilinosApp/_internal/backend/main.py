@@ -1,4 +1,5 @@
 import sys
+import time
 from pathlib import Path
 
 from fastapi import FastAPI
@@ -26,6 +27,18 @@ STATIC_DIR = resource_path("static")
 
 app = FastAPI(title="Sistema de Imóveis")
 
+app.state.ultimo_heartbeat = time.time()
+app.state.navegador_conectado = False
+
+
+@app.post("/app-heartbeat")
+def app_heartbeat():
+    app.state.navegador_conectado = True
+    app.state.ultimo_heartbeat = time.time()
+
+    return {"ok": True}
+
+
 app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
 
 templates = Jinja2Templates(directory=TEMPLATES_DIR)
@@ -36,9 +49,11 @@ app.state.templates = templates
 def startup():
     init_db()
 
+
 @app.get("/")
 def inicio():
     return RedirectResponse(url="/dashboard", status_code=303)
+
 
 app.include_router(dashboard.router)
 app.include_router(imoveis.router)

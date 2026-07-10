@@ -46,7 +46,7 @@
       type="text"
       name="busca"
       value="{{ busca or '' }}"
-      placeholder="Buscar por nome, endereço, tipo ou inquilino..."
+      placeholder="Buscar por nome, características, tipo ou inquilino..."
     >
   </form>
 
@@ -139,7 +139,7 @@
 
           <div class="imovel-info">
             <div class="info-line">
-              <i data-lucide="map-pin"></i>
+              <i data-lucide="bed-double"></i>
               <span>{{ imovel.endereco }}</span>
             </div>
 
@@ -276,10 +276,10 @@
       </label>
 
       <label>
-        Endereço
+        Características do Imóvel
         <textarea
           name="endereco"
-          placeholder="Rua, número, complemento"
+          placeholder="Ex: 2 quartos, 1 banheiro, sala, cozinha e área de serviço"
           required
         ></textarea>
       </label>
@@ -380,10 +380,10 @@
           </div>
 
           <div class="details-info-box">
-            <i data-lucide="map-pin"></i>
+            <i data-lucide="bed-double"></i>
 
             <div>
-              <small>Endereço</small>
+              <small>Características do Imóvel</small>
               <strong>{{ imovel_detalhe.endereco }}</strong>
             </div>
           </div>
@@ -457,7 +457,7 @@
             </label>
 
             <label>
-              Endereço
+              Características do Imóvel
               <textarea name="endereco" required>{{ imovel_detalhe.endereco }}</textarea>
             </label>
 

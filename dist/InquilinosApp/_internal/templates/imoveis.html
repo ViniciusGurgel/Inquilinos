@@ -7,76 +7,117 @@
 {% block content %}
 <section class="imoveis-page">
   <div class="page-header">
-    <div>
-      <h1>Imóveis</h1>
-      <p>Gerencie seus imóveis e condomínios cadastrados</p>
+    <div class="page-title-row">
+      {% if condominio_atual %}
+        <a href="/imoveis" class="back-icon-button" title="Voltar para imóveis">
+          <i data-lucide="arrow-left"></i>
+        </a>
+
+        <div>
+          <h1>{{ condominio_atual.nome }}</h1>
+          <p>Gerencie os imóveis deste condomínio</p>
+        </div>
+      {% else %}
+        <div>
+          <h1>Imóveis</h1>
+          <p>Gerencie seus imóveis e condomínios cadastrados</p>
+        </div>
+      {% endif %}
     </div>
 
     <button type="button" class="primary-button" data-open-modal>
       <i data-lucide="plus"></i>
-      Adicionar
+      {% if condominio_atual %}
+        Adicionar Imóvel
+      {% else %}
+        Adicionar
+      {% endif %}
     </button>
   </div>
 
   <form method="get" action="/imoveis" class="search-box">
+    {% if condominio_atual %}
+      <input type="hidden" name="condominio_id" value="{{ condominio_atual.id }}">
+    {% endif %}
+
     <i data-lucide="search"></i>
+
     <input
       type="text"
       name="busca"
       value="{{ busca or '' }}"
-      placeholder="Buscar por nome, endereço, tipo ou condomínio..."
+      placeholder="Buscar por nome, características, tipo ou inquilino..."
     >
   </form>
 
-  {% if condominios %}
-    <div class="section-title">
-      <h2>Condomínios</h2>
-      <p>Prédios, conjuntos ou grupos de imóveis</p>
-    </div>
+  {% if not condominio_atual %}
+    {% if condominios %}
+      <div class="section-title">
+        <h2>Condomínios</h2>
+        <p>Clique em um condomínio para visualizar os imóveis cadastrados nele</p>
+      </div>
 
-    <div class="condominios-grid">
-      {% for condominio in condominios %}
-        <article
-          class="condominio-card"
-          style="--condominio-color: {{ condominio.cor or '#2f7df6' }};"
-        >
-          <div class="condominio-card-header">
-            <div class="condominio-icon">
-              <i data-lucide="home"></i>
+      <div class="condominios-grid">
+        {% for condominio in condominios %}
+          <article
+            class="condominio-card clickable-card"
+            style="--condominio-color: {{ condominio.cor or '#2f7df6' }};"
+          >
+            <a
+              href="/imoveis?condominio_id={{ condominio.id }}"
+              class="card-fill-link"
+              aria-label="Abrir condomínio {{ condominio.nome }}"
+            ></a>
+
+            <div class="condominio-card-header">
+              <div class="condominio-icon">
+                <i data-lucide="home"></i>
+              </div>
+
+              <div>
+                <h3>{{ condominio.nome }}</h3>
+                <span>Condomínio</span>
+              </div>
             </div>
 
-            <div>
-              <h3>{{ condominio.nome }}</h3>
-              <span>Condomínio</span>
-            </div>
-          </div>
+            <div class="condominio-footer">
+              <div>
+                <small>Total de Imóveis</small>
+                <strong>{{ condominio.total_imoveis or 0 }}</strong>
+              </div>
 
-          <div class="condominio-footer">
-            <div>
-              <small>Total de Imóveis</small>
-              <strong>{{ condominio.total_imoveis or 0 }}</strong>
+              <form method="post" action="/condominios/{{ condominio.id }}/deletar" class="above-card-link">
+                <button type="submit" class="icon-button danger-button" title="Remover condomínio">
+                  <i data-lucide="trash-2"></i>
+                </button>
+              </form>
             </div>
-
-            <form method="post" action="/condominios/{{ condominio.id }}/deletar">
-              <button type="submit" class="icon-button danger-button" title="Remover condomínio">
-                <i data-lucide="trash-2"></i>
-              </button>
-            </form>
-          </div>
-        </article>
-      {% endfor %}
-    </div>
+          </article>
+        {% endfor %}
+      </div>
+    {% endif %}
   {% endif %}
 
   <div class="section-title">
-    <h2>Imóveis</h2>
-    <p>Apartamentos, kitnets, casas e salas comerciais</p>
+    {% if condominio_atual %}
+      <h2>Imóveis do condomínio</h2>
+      <p>Apartamentos, kitnets, casas e salas cadastradas em {{ condominio_atual.nome }}</p>
+    {% else %}
+      <h2>Imóveis</h2>
+      <p>Apartamentos, kitnets, casas e salas comerciais</p>
+    {% endif %}
   </div>
 
   {% if imoveis %}
     <div class="imoveis-grid">
       {% for imovel in imoveis %}
-        <article class="imovel-card">
+        <article class="imovel-card clickable-card">
+          <a
+            href="/imoveis?detalhe_id={{ imovel.id }}{% if condominio_atual %}&condominio_id={{ condominio_atual.id }}{% endif %}"
+            class="card-fill-link"
+            aria-label="Abrir imóvel {{ imovel.nome }}"
+          ></a>
+
           <div class="imovel-card-header">
             <div class="imovel-title">
               <div class="imovel-icon">
@@ -98,14 +139,21 @@
 
           <div class="imovel-info">
             <div class="info-line">
-              <i data-lucide="map-pin"></i>
+              <i data-lucide="bed-double"></i>
               <span>{{ imovel.endereco }}</span>
             </div>
 
-            {% if imovel.condominio_nome %}
+            {% if imovel.condominio_nome and not condominio_atual %}
               <div class="info-line">
                 <i data-lucide="home"></i>
                 <span>{{ imovel.condominio_nome }}</span>
+              </div>
+            {% endif %}
+
+            {% if imovel.total_fotos and imovel.total_fotos > 0 %}
+              <div class="info-line">
+                <i data-lucide="image"></i>
+                <span>{{ imovel.total_fotos }} foto(s)</span>
               </div>
             {% endif %}
           </div>
@@ -124,11 +172,7 @@
             {% endif %}
 
             <div class="card-actions">
-              <a href="/imoveis/{{ imovel.id }}/editar" class="icon-button" title="Editar imóvel">
-                <i data-lucide="pencil"></i>
-              </a>
-
-              <form method="post" action="/imoveis/{{ imovel.id }}/deletar">
+              <form method="post" action="/imoveis/{{ imovel.id }}/deletar" class="above-card-link">
                 <button type="submit" class="icon-button danger-button" title="Remover imóvel">
                   <i data-lucide="trash-2"></i>
                 </button>
@@ -143,12 +187,19 @@
       <div>
         <i data-lucide="building-2"></i>
       </div>
-      <h2>Nenhum imóvel cadastrado</h2>
-      <p>Clique em adicionar para cadastrar um imóvel ou condomínio.</p>
+
+      {% if condominio_atual %}
+        <h2>Nenhum imóvel neste condomínio</h2>
+        <p>Clique em adicionar imóvel para cadastrar um imóvel em {{ condominio_atual.nome }}.</p>
+      {% else %}
+        <h2>Nenhum imóvel cadastrado</h2>
+        <p>Clique em adicionar para cadastrar um imóvel ou condomínio.</p>
+      {% endif %}
     </div>
   {% endif %}
 </section>
 
+<!-- MODAL DE ADICIONAR -->
 <div class="modal-backdrop" data-modal>
   <div class="modal-card">
     <div class="modal-header">
@@ -159,17 +210,24 @@
       </button>
     </div>
 
-    <div class="tabs">
-      <button type="button" class="tab-button active" data-tab-button="imovel">
-        Imóvel
-      </button>
+    {% if not condominio_atual %}
+      <div class="tabs">
+        <button type="button" class="tab-button active" data-tab-button="imovel">
+          Imóvel
+        </button>
 
-      <button type="button" class="tab-button" data-tab-button="condominio">
-        Condomínio
-      </button>
-    </div>
+        <button type="button" class="tab-button" data-tab-button="condominio">
+          Condomínio
+        </button>
+      </div>
+    {% endif %}
 
-    <form method="post" action="/imoveis/criar" class="modal-form tab-content active" data-tab-content="imovel">
+    <form
+      method="post"
+      action="/imoveis/criar"
+      class="modal-form tab-content active"
+      data-tab-content="imovel"
+    >
       <label>
         Nome do Imóvel
         <input
@@ -199,9 +257,17 @@
         Condomínio
         <div class="select-wrapper">
           <select name="condominio_id">
-            <option value="" selected>Sem condomínio</option>
+            <option value="" {% if not condominio_atual %}selected{% endif %}>
+              Sem condomínio
+            </option>
+
             {% for condominio in condominios %}
-              <option value="{{ condominio.id }}">{{ condominio.nome }}</option>
+              <option
+                value="{{ condominio.id }}"
+                {% if condominio_atual and condominio.id == condominio_atual.id %}selected{% endif %}
+              >
+                {{ condominio.nome }}
+              </option>
             {% endfor %}
           </select>
 
@@ -210,10 +276,10 @@
       </label>
 
       <label>
-        Endereço
+        Características do Imóvel
         <textarea
           name="endereco"
-          placeholder="Rua, número, complemento"
+          placeholder="Ex: 2 quartos, 1 banheiro, sala, cozinha e área de serviço"
           required
         ></textarea>
       </label>
@@ -223,37 +289,240 @@
       </button>
     </form>
 
-    <form method="post" action="/condominios/criar" class="modal-form tab-content" data-tab-content="condominio">
-      <label>
-        Nome do Condomínio
-        <input
-          type="text"
-          name="nome"
-          placeholder="Ex: Prédio Primavera"
-          required
-        >
-      </label>
-
-      <label>
-        Cor do Condomínio
-        <div class="color-row">
+    {% if not condominio_atual %}
+      <form
+        method="post"
+        action="/condominios/criar"
+        class="modal-form tab-content"
+        data-tab-content="condominio"
+      >
+        <label>
+          Nome do Condomínio
           <input
-            type="color"
-            name="cor"
-            value="#2f7df6"
+            type="text"
+            name="nome"
+            placeholder="Ex: Residencial Primavera"
             required
           >
+        </label>
 
-          <span>Essa cor ajuda a identificar visualmente o conjunto.</span>
-        </div>
-      </label>
+        <label>
+          Cor do Condomínio
+          <div class="color-row">
+            <input
+              type="color"
+              name="cor"
+              value="#2f7df6"
+              required
+            >
 
-      <button type="submit" class="submit-button">
-        Adicionar Condomínio
-      </button>
-    </form>
+            <span>Essa cor ajuda a identificar visualmente o conjunto.</span>
+          </div>
+        </label>
+
+        <button type="submit" class="submit-button">
+          Adicionar Condomínio
+        </button>
+      </form>
+    {% endif %}
   </div>
 </div>
+
+<!-- MODAL DE DETALHES DO IMÓVEL -->
+<!-- MODAL DE DETALHES DO IMÓVEL -->
+{% if imovel_detalhe %}
+<div class="modal-backdrop is-open">
+  <div class="modal-card details-modal compact-details-modal">
+    <div class="modal-header">
+      <h2>Detalhes do Imóvel</h2>
+
+      <a href="{{ voltar_url }}" class="close-button">
+        <i data-lucide="x"></i>
+      </a>
+    </div>
+
+    <div class="tabs details-tabs">
+      <a
+        href="/imoveis?detalhe_id={{ imovel_detalhe.id }}&aba=info{% if condominio_atual %}&condominio_id={{ condominio_atual.id }}{% endif %}"
+        class="tab-button {% if aba_detalhe == 'info' %}active{% endif %}"
+      >
+        Informações
+      </a>
+
+      <a
+        href="/imoveis?detalhe_id={{ imovel_detalhe.id }}&aba=fotos{% if condominio_atual %}&condominio_id={{ condominio_atual.id }}{% endif %}"
+        class="tab-button {% if aba_detalhe == 'fotos' %}active{% endif %}"
+      >
+        Fotos ({{ fotos_imovel|length }})
+      </a>
+    </div>
+
+    {% if aba_detalhe == "info" %}
+      <div class="details-main">
+
+        <!-- VISUALIZAÇÃO DO IMÓVEL -->
+        <div class="details-view-panel" data-details-view>
+          <div class="details-heading">
+            <div class="imovel-icon large-icon">
+              <i data-lucide="building-2"></i>
+            </div>
+
+            <div>
+              <h3>{{ imovel_detalhe.nome }}</h3>
+              <span>{{ imovel_detalhe.tipo }}</span>
+            </div>
+
+            {% if imovel_detalhe.inquilino_nome %}
+              <span class="status-badge status-ocupado">Ocupado</span>
+            {% else %}
+              <span class="status-badge status-disponivel">Disponível</span>
+            {% endif %}
+          </div>
+
+          <div class="details-info-box">
+            <i data-lucide="bed-double"></i>
+
+            <div>
+              <small>Características do Imóvel</small>
+              <strong>{{ imovel_detalhe.endereco }}</strong>
+            </div>
+          </div>
+
+          <div class="details-info-box">
+            <i data-lucide="user"></i>
+
+            <div>
+              <small>Inquilino atual</small>
+              <strong>{{ imovel_detalhe.inquilino_nome or "Disponível para locação" }}</strong>
+            </div>
+          </div>
+
+          <div class="details-actions">
+            <button type="button" class="edit-wide-button" data-open-edit-panel>
+              <i data-lucide="pencil"></i>
+              Editar Imóvel
+            </button>
+
+            <form method="post" action="/imoveis/{{ imovel_detalhe.id }}/deletar">
+              <button type="submit" class="delete-wide-button">
+                <i data-lucide="trash-2"></i>
+                Remover Imóvel
+              </button>
+            </form>
+          </div>
+        </div>
+
+        <!-- EDIÇÃO DO IMÓVEL -->
+        <div class="details-edit-panel" data-edit-panel>
+          <form method="post" action="/imoveis/{{ imovel_detalhe.id }}/editar" class="modal-form edit-details-form">
+            <label>
+              Nome do Imóvel
+              <input type="text" name="nome" value="{{ imovel_detalhe.nome }}" required>
+            </label>
+
+            <label>
+              Tipo
+              <div class="select-wrapper">
+                <select name="tipo" required>
+                  <option value="apartamento" {% if imovel_detalhe.tipo == "apartamento" %}selected{% endif %}>Apartamento</option>
+                  <option value="casa" {% if imovel_detalhe.tipo == "casa" %}selected{% endif %}>Casa</option>
+                  <option value="comercial" {% if imovel_detalhe.tipo == "comercial" %}selected{% endif %}>Comercial</option>
+                  <option value="kitnet" {% if imovel_detalhe.tipo == "kitnet" %}selected{% endif %}>Kitnet</option>
+                </select>
+
+                <i data-lucide="chevron-down"></i>
+              </div>
+            </label>
+
+            <label>
+              Condomínio
+              <div class="select-wrapper">
+                <select name="condominio_id">
+                  <option value="" {% if not imovel_detalhe.condominio_id %}selected{% endif %}>
+                    Sem condomínio
+                  </option>
+
+                  {% for condominio in condominios %}
+                    <option
+                      value="{{ condominio.id }}"
+                      {% if condominio.id == imovel_detalhe.condominio_id %}selected{% endif %}
+                    >
+                      {{ condominio.nome }}
+                    </option>
+                  {% endfor %}
+                </select>
+
+                <i data-lucide="chevron-down"></i>
+              </div>
+            </label>
+
+            <label>
+              Características do Imóvel
+              <textarea name="endereco" required>{{ imovel_detalhe.endereco }}</textarea>
+            </label>
+
+            <div class="edit-form-actions">
+              <button type="button" class="secondary-edit-button" data-close-edit-panel>
+                Cancelar
+              </button>
+
+              <button type="submit" class="submit-button">
+                <i data-lucide="pencil"></i>
+                Salvar Alterações
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    {% endif %}
+
+    {% if aba_detalhe == "fotos" %}
+      <div class="photos-tab">
+        <form
+          method="post"
+          action="/imoveis/{{ imovel_detalhe.id }}/fotos"
+          enctype="multipart/form-data"
+          class="photo-upload-form"
+        >
+          <label class="photo-upload-button">
+            <i data-lucide="plus"></i>
+            Escolher Fotos
+            <input type="file" name="fotos" accept="image/*" multiple required>
+          </label>
+
+          <button type="submit" class="submit-button">
+            Enviar Fotos
+          </button>
+        </form>
+
+        {% if fotos_imovel %}
+          <div class="photos-grid">
+            {% for foto in fotos_imovel %}
+              <article class="photo-card">
+                <a href="/imoveis/fotos/{{ foto.id }}" target="_blank">
+                  <img src="/imoveis/fotos/{{ foto.id }}" alt="{{ foto.nome_arquivo }}">
+                </a>
+
+                <form method="post" action="/imoveis/fotos/{{ foto.id }}/deletar">
+                  <button type="submit" class="photo-delete-button" title="Remover foto">
+                    <i data-lucide="trash-2"></i>
+                  </button>
+                </form>
+              </article>
+            {% endfor %}
+          </div>
+        {% else %}
+          <div class="photos-empty">
+            <i data-lucide="image"></i>
+            <strong>Nenhuma foto adicionada ainda</strong>
+            <span>Clique em escolher fotos para cadastrar imagens do imóvel.</span>
+          </div>
+        {% endif %}
+      </div>
+    {% endif %}
+  </div>
+</div>
+{% endif %}
 {% endblock %}
 
 {% block scripts %}
@@ -263,20 +532,44 @@
   const closeModalButton = document.querySelector("[data-close-modal]");
   const tabButtons = document.querySelectorAll("[data-tab-button]");
   const tabContents = document.querySelectorAll("[data-tab-content]");
+  const detailsView = document.querySelector("[data-details-view]");
+  const openEditPanelButton = document.querySelector("[data-open-edit-panel]");
+  const closeEditPanelButton = document.querySelector("[data-close-edit-panel]");
+  const editPanel = document.querySelector("[data-edit-panel]");
 
-  openModalButton.addEventListener("click", () => {
-    modal.classList.add("is-open");
-  });
+  if (modal && openModalButton) {
+    openModalButton.addEventListener("click", () => {
+      modal.classList.add("is-open");
+    });
+  }
 
-  closeModalButton.addEventListener("click", () => {
-    modal.classList.remove("is-open");
-  });
-
-  modal.addEventListener("click", (event) => {
-    if (event.target === modal) {
+  if (modal && closeModalButton) {
+    closeModalButton.addEventListener("click", () => {
       modal.classList.remove("is-open");
-    }
-  });
+    });
+  }
+
+  if (openEditPanelButton && editPanel && detailsView) {
+    openEditPanelButton.addEventListener("click", () => {
+      detailsView.classList.add("is-hidden");
+      editPanel.classList.add("is-open");
+    });
+  }
+
+  if (closeEditPanelButton && editPanel && detailsView) {
+    closeEditPanelButton.addEventListener("click", () => {
+      editPanel.classList.remove("is-open");
+      detailsView.classList.remove("is-hidden");
+    });
+  }
+
+  if (modal) {
+    modal.addEventListener("click", (event) => {
+      if (event.target === modal) {
+        modal.classList.remove("is-open");
+      }
+    });
+  }
 
   tabButtons.forEach((button) => {
     button.addEventListener("click", () => {
@@ -286,7 +579,11 @@
       tabContents.forEach((item) => item.classList.remove("active"));
 
       button.classList.add("active");
-      document.querySelector(`[data-tab-content="${tab}"]`).classList.add("active");
+
+      const content = document.querySelector(`[data-tab-content="${tab}"]`);
+      if (content) {
+        content.classList.add("active");
+      }
     });
   });
 </script>
