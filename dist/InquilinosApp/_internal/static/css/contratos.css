@@ -1,0 +1,469 @@
+.contratos-page {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+.page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.page-header h1 {
+  margin: 0;
+  color: var(--text);
+  font-size: 30px;
+  font-weight: 700;
+}
+
+.page-header p {
+  margin: 8px 0 0;
+  color: var(--muted);
+}
+
+.primary-button,
+.submit-button,
+.secondary-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 42px;
+  border: 0;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.primary-button,
+.submit-button {
+  background: var(--primary);
+  color: #ffffff;
+}
+
+.primary-button {
+  padding: 0 18px;
+}
+
+.submit-button {
+  width: 100%;
+}
+
+.secondary-button {
+  padding: 0 14px;
+  border: 1px solid #2b3a52;
+  background: #111b2c;
+  color: var(--text);
+}
+
+.primary-button:hover,
+.submit-button:hover,
+.secondary-button:hover {
+  filter: brightness(1.08);
+}
+
+.primary-button svg,
+.secondary-button svg {
+  width: 18px;
+  height: 18px;
+}
+
+.search-box {
+  position: relative;
+}
+
+.search-box svg {
+  position: absolute;
+  top: 50%;
+  left: 14px;
+  width: 18px;
+  height: 18px;
+  color: var(--muted);
+  transform: translateY(-50%);
+  pointer-events: none;
+}
+
+.search-box input {
+  width: 100%;
+  height: 46px;
+  padding: 0 14px 0 44px;
+  border: 1px solid #2b3a52;
+  border-radius: 8px;
+  outline: none;
+  background: #111b2c;
+  color: var(--text);
+  font: inherit;
+}
+
+.search-box input:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 2px rgba(47, 125, 246, 0.22);
+}
+
+.contratos-grid {
+  display: grid;
+  gap: 18px;
+}
+
+.contrato-card,
+.empty-state,
+.modal-card {
+  border: 1px solid #2b3a52;
+  border-radius: 8px;
+  background: #1d2a3d;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.28);
+}
+
+.contrato-card {
+  padding: 22px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.contrato-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 14px 28px rgba(0, 0, 0, 0.34);
+}
+
+.contrato-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.contrato-title {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.contrato-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 46px;
+  height: 46px;
+  border-radius: 8px;
+  background: rgba(47, 125, 246, 0.12);
+  color: var(--primary);
+}
+
+.contrato-icon svg {
+  width: 24px;
+  height: 24px;
+}
+
+.contrato-title h2 {
+  margin: 0;
+  color: var(--text);
+  font-size: 20px;
+}
+
+.contrato-title p {
+  margin: 5px 0 0;
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  min-height: 28px;
+  padding: 0 12px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.status-ativo {
+  background: rgba(34, 197, 94, 0.14);
+  color: #22c55e;
+}
+
+.status-inativo {
+  background: rgba(239, 68, 68, 0.16);
+  color: #ef4444;
+}
+
+.contrato-info {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 18px;
+  margin-top: 24px;
+}
+
+.contrato-info span {
+  display: block;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.contrato-info strong {
+  display: block;
+  margin-top: 6px;
+  color: var(--text);
+  font-size: 15px;
+}
+
+.contrato-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 22px;
+  padding-top: 18px;
+  border-top: 1px solid #2b3a52;
+}
+
+.contrato-actions form {
+  margin: 0;
+}
+
+.pdf-empty {
+  color: var(--muted);
+  font-size: 13px;
+  margin-right: auto;
+}
+
+.icon-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.icon-button:hover {
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--text);
+}
+
+.icon-button svg {
+  width: 17px;
+  height: 17px;
+}
+
+.danger-button {
+  color: #ef4444;
+}
+
+.danger-button:hover {
+  background: rgba(239, 68, 68, 0.12);
+  color: #ef4444;
+}
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 260px;
+  padding: 32px;
+  text-align: center;
+}
+
+.empty-state div {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  border-radius: 8px;
+  background: rgba(47, 125, 246, 0.12);
+  color: var(--primary);
+}
+
+.empty-state svg {
+  width: 28px;
+  height: 28px;
+}
+
+.empty-state h2 {
+  margin: 18px 0 8px;
+  color: var(--text);
+  font-size: 22px;
+}
+
+.empty-state p {
+  margin: 0;
+  color: var(--muted);
+}
+
+/* MODAL */
+
+.modal-backdrop {
+  position: fixed !important;
+  inset: 0 !important;
+  display: none !important;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 60px 20px;
+  background: rgba(0, 0, 0, 0.72);
+  z-index: 9999;
+  overflow-y: auto;
+}
+
+.modal-backdrop.is-open {
+  display: flex !important;
+}
+
+.modal-card {
+  width: min(520px, 100%);
+  padding: 24px;
+}
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 18px;
+}
+
+.modal-header h2 {
+  margin: 0;
+  color: var(--text);
+  font-size: 20px;
+}
+
+.close-button {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+}
+
+.close-button:hover {
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--text);
+}
+
+.close-button svg {
+  width: 18px;
+  height: 18px;
+}
+
+.modal-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.modal-form label {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  color: var(--text);
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.modal-form input,
+.modal-form textarea,
+.select-wrapper select {
+  width: 100%;
+  border: 1px solid #2b3a52;
+  border-radius: 8px;
+  outline: none;
+  background: #111b2c;
+  color: var(--text);
+  font: inherit;
+}
+
+.modal-form input,
+.select-wrapper select {
+  height: 42px;
+  padding: 0 12px;
+}
+
+.modal-form input[type="file"] {
+  padding: 9px 12px;
+}
+
+.modal-form textarea {
+  min-height: 86px;
+  padding: 12px;
+  resize: vertical;
+}
+
+.modal-form input:focus,
+.modal-form textarea:focus,
+.select-wrapper select:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 2px rgba(47, 125, 246, 0.22);
+}
+
+.select-wrapper {
+  position: relative;
+}
+
+.select-wrapper select {
+  padding-right: 42px;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+}
+
+.select-wrapper select option {
+  background: #111b2c;
+  color: var(--text);
+}
+
+.select-wrapper svg {
+  position: absolute;
+  top: 50%;
+  right: 14px;
+  width: 16px;
+  height: 16px;
+  color: var(--muted);
+  pointer-events: none;
+  transform: translateY(-50%);
+}
+
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type="number"] {
+  appearance: textfield;
+  -moz-appearance: textfield;
+}
+
+@media (max-width: 900px) {
+  .contrato-info {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 620px) {
+  .page-header,
+  .contrato-header,
+  .contrato-actions {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .primary-button,
+  .secondary-button {
+    width: 100%;
+  }
+
+  .contrato-info {
+    grid-template-columns: 1fr;
+  }
+}

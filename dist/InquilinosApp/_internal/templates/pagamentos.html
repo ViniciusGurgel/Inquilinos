@@ -1,0 +1,375 @@
+{% extends "base.html" %}
+
+{% block styles %}
+<link rel="stylesheet" href="/static/css/pagamentos.css">
+{% endblock %}
+
+{% block content %}
+<section class="pagamentos-page">
+  <div class="page-header">
+    <div>
+      <h1>Pagamentos</h1>
+      <p>Controle de pagamentos e histórico financeiro</p>
+    </div>
+
+    <button type="button" class="primary-button" data-open-modal>
+      <i data-lucide="plus"></i>
+      Novo Pagamento
+    </button>
+  </div>
+
+  <div class="payments-summary">
+    <article class="summary-card summary-success">
+      <div>
+        <span>Total Recebido</span>
+        <strong>{{ total_recebido }}</strong>
+      </div>
+      <i data-lucide="check-circle"></i>
+    </article>
+
+    <article class="summary-card summary-warning">
+      <div>
+        <span>Pendente</span>
+        <strong>{{ total_pendente }}</strong>
+      </div>
+      <i data-lucide="clock"></i>
+    </article>
+
+    <article class="summary-card summary-danger">
+      <div>
+        <span>Em Atraso</span>
+        <strong>{{ total_atrasado }}</strong>
+      </div>
+      <i data-lucide="alert-circle"></i>
+    </article>
+  </div>
+
+  <section class="table-card">
+    <div class="table-header">
+      <h2>Lista de Pagamentos</h2>
+    </div>
+
+    {% if pagamentos %}
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Inquilino</th>
+              <th>Imóvel</th>
+              <th>Mês</th>
+              <th>Vencimento</th>
+              <th>Valor</th>
+              <th>Status</th>
+              <th>Total</th>
+              <th class="text-right">Ações</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            {% for pagamento in pagamentos %}
+              <tr>
+                <td>
+                  <strong>{{ pagamento.inquilino_nome }}</strong>
+                </td>
+
+                <td>{{ pagamento.imovel_nome }}</td>
+
+                <td>{{ pagamento.mes_referencia }}</td>
+
+                <td>{{ pagamento.data_vencimento }}</td>
+
+                <td>{{ pagamento.valor_cobrado }}</td>
+
+                <td>
+                  {% if pagamento.status == "pago" %}
+                    <span class="status-badge status-pago">
+                      <i data-lucide="check-circle"></i>
+                      Pago
+                    </span>
+                  {% elif pagamento.status == "atrasado" %}
+                    <span class="status-badge status-atrasado">
+                      <i data-lucide="alert-circle"></i>
+                      Atrasado
+                    </span>
+                  {% else %}
+                    <span class="status-badge status-pendente">
+                      <i data-lucide="clock"></i>
+                      Pendente
+                    </span>
+                  {% endif %}
+                </td>
+
+                <td>
+                  <strong>{{ pagamento.total }}</strong>
+                </td>
+
+                <td>
+                  <div class="actions-cell">
+                    {% if pagamento.status != "pago" %}
+                      <form method="post" action="/pagamentos/{{ pagamento.id }}/pagar">
+                        <button type="submit" class="icon-button success-button" title="Marcar como pago">
+                          <i data-lucide="check"></i>
+                        </button>
+                      </form>
+                    {% endif %}
+
+                    {% if pagamento.tem_comprovante %}
+                      <a
+                        href="/pagamentos/{{ pagamento.id }}/comprovante"
+                        target="_blank"
+                        class="icon-button"
+                        title="Abrir comprovante"
+                      >
+                        <i data-lucide="paperclip"></i>
+                      </a>
+                    {% endif %}
+
+                    <a href="/pagamentos?editar_id={{ pagamento.id }}" class="icon-button" title="Editar pagamento">
+                      <i data-lucide="pencil"></i>
+                    </a>
+
+                    <form method="post" action="/pagamentos/{{ pagamento.id }}/deletar">
+                      <button type="submit" class="icon-button danger-button" title="Excluir pagamento">
+                        <i data-lucide="trash-2"></i>
+                      </button>
+                    </form>
+                  </div>
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% else %}
+      <div class="empty-state">
+        <div>
+          <i data-lucide="dollar-sign"></i>
+        </div>
+        <h2>Nenhum pagamento cadastrado</h2>
+        <p>Clique em novo pagamento para registrar uma cobrança.</p>
+      </div>
+    {% endif %}
+  </section>
+</section>
+
+<!-- MODAL DE NOVO PAGAMENTO -->
+<div class="modal-backdrop" data-modal>
+  <div class="modal-card">
+    <div class="modal-header">
+      <div>
+        <h2>Registrar Pagamento</h2>
+        <p>Crie um novo registro de pagamento</p>
+      </div>
+
+      <button type="button" class="close-button" data-close-modal>
+        <i data-lucide="x"></i>
+      </button>
+    </div>
+
+    <form method="post" action="/pagamentos/criar" enctype="multipart/form-data" class="modal-form">
+      <label>
+        Contrato
+        <div class="select-wrapper">
+          <select name="contrato_id" required>
+            <option value="" disabled selected hidden>Selecione o contrato</option>
+            {% for contrato in contratos %}
+              <option value="{{ contrato.id }}">
+                {{ contrato.inquilino_nome }} - {{ contrato.imovel_nome }}
+              </option>
+            {% endfor %}
+          </select>
+
+          <i data-lucide="chevron-down"></i>
+        </div>
+      </label>
+
+      <label>
+        Mês de Referência
+        <input type="month" name="mes_referencia" required>
+      </label>
+
+      <label>
+        Valor Cobrado
+        <input
+          type="number"
+          name="valor_cobrado"
+          min="0"
+          step="0.01"
+          placeholder="Ex: 1200"
+          required
+        >
+      </label>
+
+      <label>
+        Data de Vencimento
+        <input type="date" name="data_vencimento" required>
+      </label>
+
+      <label>
+        Comprovante
+        <input type="file" name="comprovante" accept=".pdf,image/*">
+      </label>
+
+      <label>
+        Observação
+        <textarea
+          name="observacao"
+          placeholder="Ex: Aluguel referente ao mês atual"
+        ></textarea>
+      </label>
+
+      <div class="modal-actions">
+        <button type="button" class="secondary-button" data-close-modal>
+          Cancelar
+        </button>
+
+        <button type="submit" class="submit-button">
+          Registrar
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- MODAL DE EDITAR PAGAMENTO -->
+{% if pagamento_edicao %}
+<div class="modal-backdrop is-open">
+  <div class="modal-card">
+    <div class="modal-header">
+      <div>
+        <h2>Editar Pagamento</h2>
+        <p>Altere os dados do pagamento selecionado</p>
+      </div>
+
+      <a href="/pagamentos" class="close-button">
+        <i data-lucide="x"></i>
+      </a>
+    </div>
+
+    <form method="post" action="/pagamentos/{{ pagamento_edicao.id }}/editar" enctype="multipart/form-data" class="modal-form">
+      <label>
+        Contrato
+        <div class="select-wrapper">
+          <select name="contrato_id" required>
+            {% for contrato in contratos %}
+              <option
+                value="{{ contrato.id }}"
+                {% if contrato.id == pagamento_edicao.contrato_id %}selected{% endif %}
+              >
+                {{ contrato.inquilino_nome }} - {{ contrato.imovel_nome }}
+              </option>
+            {% endfor %}
+          </select>
+
+          <i data-lucide="chevron-down"></i>
+        </div>
+      </label>
+
+      <label>
+        Mês de Referência
+        <input
+          type="month"
+          name="mes_referencia"
+          value="{{ pagamento_edicao.mes_referencia }}"
+          required
+        >
+      </label>
+
+      <label>
+        Valor Cobrado
+        <input
+          type="number"
+          name="valor_cobrado"
+          min="0"
+          step="0.01"
+          value="{{ pagamento_edicao.valor_cobrado }}"
+          required
+        >
+      </label>
+
+      <label>
+        Data de Vencimento
+        <input
+          type="date"
+          name="data_vencimento"
+          value="{{ pagamento_edicao.data_vencimento }}"
+          required
+        >
+      </label>
+
+      <label>
+        Status
+        <div class="select-wrapper">
+          <select name="status">
+            <option value="pendente" {% if pagamento_edicao.status != "pago" %}selected{% endif %}>
+              Pendente
+            </option>
+
+            <option value="pago" {% if pagamento_edicao.status == "pago" %}selected{% endif %}>
+              Pago
+            </option>
+          </select>
+
+          <i data-lucide="chevron-down"></i>
+        </div>
+      </label>
+
+      <label>
+        Comprovante
+        <input type="file" name="comprovante" accept=".pdf,image/*">
+      </label>
+
+      {% if pagamento_edicao.comprovante_arquivo %}
+        <a
+          href="/pagamentos/{{ pagamento_edicao.id }}/comprovante"
+          target="_blank"
+          class="secondary-button"
+        >
+          <i data-lucide="paperclip"></i>
+          Ver comprovante atual
+        </a>
+      {% endif %}
+
+      <label>
+        Observação
+        <textarea name="observacao">{{ pagamento_edicao.observacao or '' }}</textarea>
+      </label>
+
+      <div class="modal-actions">
+        <a href="/pagamentos" class="secondary-button">
+          Cancelar
+        </a>
+
+        <button type="submit" class="submit-button">
+          Salvar Alterações
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block scripts %}
+<script>
+  const modal = document.querySelector("[data-modal]");
+  const openModalButton = document.querySelector("[data-open-modal]");
+  const closeModalButtons = document.querySelectorAll("[data-close-modal]");
+
+  openModalButton.addEventListener("click", () => {
+    modal.classList.add("is-open");
+  });
+
+  closeModalButtons.forEach((button) => {
+    button.addEventListener("click", () => {
+      modal.classList.remove("is-open");
+    });
+  });
+
+  modal.addEventListener("click", (event) => {
+    if (event.target === modal) {
+      modal.classList.remove("is-open");
+    }
+  });
+</script>
+{% endblock %}

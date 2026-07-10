@@ -1,0 +1,404 @@
+.inquilinos-page {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+.page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.page-header h1 {
+  margin: 0;
+  color: var(--text);
+  font-size: 30px;
+  font-weight: 700;
+}
+
+.page-header p {
+  margin: 8px 0 0;
+  color: var(--muted);
+}
+
+.primary-button,
+.submit-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 40px;
+  border: 0;
+  border-radius: 6px;
+  background: var(--primary);
+  color: #ffffff;
+  cursor: pointer;
+  font-weight: 700;
+}
+
+.primary-button {
+  padding: 0 18px;
+}
+
+.submit-button {
+  width: 100%;
+  margin-top: 4px;
+}
+
+.primary-button svg {
+  width: 18px;
+  height: 18px;
+}
+
+.search-box {
+  position: relative;
+}
+
+.search-box svg {
+  position: absolute;
+  top: 50%;
+  left: 14px;
+  width: 18px;
+  height: 18px;
+  color: var(--muted);
+  transform: translateY(-50%);
+  pointer-events: none;
+}
+
+.search-box input {
+  width: 100%;
+  height: 42px;
+  padding: 0 14px 0 44px;
+  border: 1px solid #2b3a52;
+  border-radius: 8px;
+  outline: none;
+  background: #111b2c;
+  color: var(--text);
+  font: inherit;
+}
+
+.inquilinos-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+
+.inquilino-card,
+.empty-state,
+.modal-card {
+  border: 1px solid #2b3a52;
+  border-radius: 8px;
+  background: #1d2a3d;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.28);
+}
+
+.inquilino-card {
+  padding: 26px;
+}
+
+.card-header {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+
+.avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 64px;
+  height: 64px;
+  border-radius: 999px;
+  background: var(--primary);
+  color: #ffffff;
+  font-size: 18px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.card-header h2 {
+  margin: 0;
+  color: var(--text);
+  font-size: 18px;
+}
+
+.card-header p {
+  margin: 6px 0 0;
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.card-info {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.info-line {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--muted);
+  font-size: 14px;
+  text-decoration: none;
+}
+
+.info-line svg {
+  width: 17px;
+  height: 17px;
+  flex-shrink: 0;
+}
+
+.whatsapp-link svg {
+  color: var(--primary);
+}
+
+.whatsapp-link:hover {
+  color: var(--primary);
+}
+
+.rent-box {
+  margin-top: 18px;
+  padding-top: 16px;
+  border-top: 1px solid #2b3a52;
+}
+
+.rent-box span {
+  display: block;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.rent-box strong {
+  display: block;
+  margin-top: 4px;
+  color: var(--text);
+  font-size: 22px;
+}
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 260px;
+  padding: 32px;
+  text-align: center;
+}
+
+.empty-state div {
+  display: grid;
+  place-items: center;
+  width: 56px;
+  height: 56px;
+  border-radius: 8px;
+  background: rgba(47, 125, 246, 0.12);
+  color: var(--primary);
+}
+
+.empty-state h2 {
+  margin: 18px 0 8px;
+  color: var(--text);
+}
+
+.empty-state p {
+  margin: 0;
+  color: var(--muted);
+}
+
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  display: none;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 60px 20px;
+  background: rgba(0, 0, 0, 0.72);
+  z-index: 50;
+  overflow-y: auto;
+}
+
+.modal-backdrop.is-open {
+  display: flex;
+}
+
+.modal-card {
+  width: min(500px, 100%);
+  padding: 24px;
+}
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+}
+
+.modal-header h2 {
+  margin: 0;
+  color: var(--text);
+  font-size: 20px;
+}
+
+.close-button {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+}
+
+.close-button:hover {
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--text);
+}
+
+.close-button svg {
+  width: 18px;
+  height: 18px;
+}
+
+.tabs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px;
+  margin-bottom: 16px;
+  padding: 4px;
+  border-radius: 6px;
+  background: #223049;
+}
+
+.tab-button {
+  height: 36px;
+  border: 0;
+  border-radius: 5px;
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+  font-weight: 700;
+}
+
+.tab-button.active {
+  background: #111b2c;
+  color: var(--text);
+}
+
+.tab-content {
+  display: none;
+}
+
+.tab-content.active {
+  display: flex;
+}
+
+.modal-form {
+  flex-direction: column;
+  gap: 16px;
+}
+
+.modal-form label {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  color: var(--text);
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.modal-form input,
+.modal-form textarea,
+.select-wrapper select {
+  width: 100%;
+  border: 1px solid #2b3a52;
+  border-radius: 8px;
+  outline: none;
+  background: #111b2c;
+  color: var(--text);
+  font: inherit;
+}
+
+.modal-form input,
+.select-wrapper select {
+  height: 40px;
+  padding: 0 12px;
+}
+
+.modal-form textarea {
+  min-height: 80px;
+  padding: 12px;
+  resize: vertical;
+}
+
+.modal-form input:focus,
+.modal-form textarea:focus,
+.select-wrapper select:focus,
+.search-box input:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 2px rgba(47, 125, 246, 0.22);
+}
+
+.select-wrapper {
+  position: relative;
+}
+
+.select-wrapper select {
+  padding-right: 42px;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+}
+
+.select-wrapper select option {
+  background: #111b2c;
+  color: var(--text);
+}
+
+.select-wrapper svg {
+  position: absolute;
+  top: 50%;
+  right: 14px;
+  width: 16px;
+  height: 16px;
+  color: var(--muted);
+  pointer-events: none;
+  transform: translateY(-50%);
+}
+
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type="number"] {
+  appearance: textfield;
+  -moz-appearance: textfield;
+}
+
+@media (max-width: 1200px) {
+  .inquilinos-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 700px) {
+  .page-header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .inquilinos-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .primary-button {
+    width: 100%;
+  }
+}

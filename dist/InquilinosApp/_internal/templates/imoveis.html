@@ -1,0 +1,293 @@
+{% extends "base.html" %}
+
+{% block styles %}
+<link rel="stylesheet" href="/static/css/imoveis.css">
+{% endblock %}
+
+{% block content %}
+<section class="imoveis-page">
+  <div class="page-header">
+    <div>
+      <h1>Imóveis</h1>
+      <p>Gerencie seus imóveis e condomínios cadastrados</p>
+    </div>
+
+    <button type="button" class="primary-button" data-open-modal>
+      <i data-lucide="plus"></i>
+      Adicionar
+    </button>
+  </div>
+
+  <form method="get" action="/imoveis" class="search-box">
+    <i data-lucide="search"></i>
+    <input
+      type="text"
+      name="busca"
+      value="{{ busca or '' }}"
+      placeholder="Buscar por nome, endereço, tipo ou condomínio..."
+    >
+  </form>
+
+  {% if condominios %}
+    <div class="section-title">
+      <h2>Condomínios</h2>
+      <p>Prédios, conjuntos ou grupos de imóveis</p>
+    </div>
+
+    <div class="condominios-grid">
+      {% for condominio in condominios %}
+        <article
+          class="condominio-card"
+          style="--condominio-color: {{ condominio.cor or '#2f7df6' }};"
+        >
+          <div class="condominio-card-header">
+            <div class="condominio-icon">
+              <i data-lucide="home"></i>
+            </div>
+
+            <div>
+              <h3>{{ condominio.nome }}</h3>
+              <span>Condomínio</span>
+            </div>
+          </div>
+
+          <div class="condominio-footer">
+            <div>
+              <small>Total de Imóveis</small>
+              <strong>{{ condominio.total_imoveis or 0 }}</strong>
+            </div>
+
+            <form method="post" action="/condominios/{{ condominio.id }}/deletar">
+              <button type="submit" class="icon-button danger-button" title="Remover condomínio">
+                <i data-lucide="trash-2"></i>
+              </button>
+            </form>
+          </div>
+        </article>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  <div class="section-title">
+    <h2>Imóveis</h2>
+    <p>Apartamentos, kitnets, casas e salas comerciais</p>
+  </div>
+
+  {% if imoveis %}
+    <div class="imoveis-grid">
+      {% for imovel in imoveis %}
+        <article class="imovel-card">
+          <div class="imovel-card-header">
+            <div class="imovel-title">
+              <div class="imovel-icon">
+                <i data-lucide="building-2"></i>
+              </div>
+
+              <div>
+                <h3>{{ imovel.nome }}</h3>
+                <span>{{ imovel.tipo }}</span>
+              </div>
+            </div>
+
+            {% if imovel.inquilino_nome %}
+              <span class="status-badge status-ocupado">Ocupado</span>
+            {% else %}
+              <span class="status-badge status-disponivel">Disponível</span>
+            {% endif %}
+          </div>
+
+          <div class="imovel-info">
+            <div class="info-line">
+              <i data-lucide="map-pin"></i>
+              <span>{{ imovel.endereco }}</span>
+            </div>
+
+            {% if imovel.condominio_nome %}
+              <div class="info-line">
+                <i data-lucide="home"></i>
+                <span>{{ imovel.condominio_nome }}</span>
+              </div>
+            {% endif %}
+          </div>
+
+          <div class="imovel-footer">
+            {% if imovel.inquilino_nome %}
+              <div>
+                <small>Inquilino</small>
+                <strong>{{ imovel.inquilino_nome }}</strong>
+              </div>
+            {% else %}
+              <div>
+                <small>Status</small>
+                <strong>Disponível para locação</strong>
+              </div>
+            {% endif %}
+
+            <div class="card-actions">
+              <a href="/imoveis/{{ imovel.id }}/editar" class="icon-button" title="Editar imóvel">
+                <i data-lucide="pencil"></i>
+              </a>
+
+              <form method="post" action="/imoveis/{{ imovel.id }}/deletar">
+                <button type="submit" class="icon-button danger-button" title="Remover imóvel">
+                  <i data-lucide="trash-2"></i>
+                </button>
+              </form>
+            </div>
+          </div>
+        </article>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="empty-state">
+      <div>
+        <i data-lucide="building-2"></i>
+      </div>
+      <h2>Nenhum imóvel cadastrado</h2>
+      <p>Clique em adicionar para cadastrar um imóvel ou condomínio.</p>
+    </div>
+  {% endif %}
+</section>
+
+<div class="modal-backdrop" data-modal>
+  <div class="modal-card">
+    <div class="modal-header">
+      <h2>Adicionar</h2>
+
+      <button type="button" class="close-button" data-close-modal>
+        <i data-lucide="x"></i>
+      </button>
+    </div>
+
+    <div class="tabs">
+      <button type="button" class="tab-button active" data-tab-button="imovel">
+        Imóvel
+      </button>
+
+      <button type="button" class="tab-button" data-tab-button="condominio">
+        Condomínio
+      </button>
+    </div>
+
+    <form method="post" action="/imoveis/criar" class="modal-form tab-content active" data-tab-content="imovel">
+      <label>
+        Nome do Imóvel
+        <input
+          type="text"
+          name="nome"
+          placeholder="Ex: Apartamento 101"
+          required
+        >
+      </label>
+
+      <label>
+        Tipo
+        <div class="select-wrapper">
+          <select name="tipo" required>
+            <option value="" disabled selected hidden>Selecione o tipo</option>
+            <option value="apartamento">Apartamento</option>
+            <option value="casa">Casa</option>
+            <option value="comercial">Comercial</option>
+            <option value="kitnet">Kitnet</option>
+          </select>
+
+          <i data-lucide="chevron-down"></i>
+        </div>
+      </label>
+
+      <label>
+        Condomínio
+        <div class="select-wrapper">
+          <select name="condominio_id">
+            <option value="" selected>Sem condomínio</option>
+            {% for condominio in condominios %}
+              <option value="{{ condominio.id }}">{{ condominio.nome }}</option>
+            {% endfor %}
+          </select>
+
+          <i data-lucide="chevron-down"></i>
+        </div>
+      </label>
+
+      <label>
+        Endereço
+        <textarea
+          name="endereco"
+          placeholder="Rua, número, complemento"
+          required
+        ></textarea>
+      </label>
+
+      <button type="submit" class="submit-button">
+        Adicionar Imóvel
+      </button>
+    </form>
+
+    <form method="post" action="/condominios/criar" class="modal-form tab-content" data-tab-content="condominio">
+      <label>
+        Nome do Condomínio
+        <input
+          type="text"
+          name="nome"
+          placeholder="Ex: Prédio Primavera"
+          required
+        >
+      </label>
+
+      <label>
+        Cor do Condomínio
+        <div class="color-row">
+          <input
+            type="color"
+            name="cor"
+            value="#2f7df6"
+            required
+          >
+
+          <span>Essa cor ajuda a identificar visualmente o conjunto.</span>
+        </div>
+      </label>
+
+      <button type="submit" class="submit-button">
+        Adicionar Condomínio
+      </button>
+    </form>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  const modal = document.querySelector("[data-modal]");
+  const openModalButton = document.querySelector("[data-open-modal]");
+  const closeModalButton = document.querySelector("[data-close-modal]");
+  const tabButtons = document.querySelectorAll("[data-tab-button]");
+  const tabContents = document.querySelectorAll("[data-tab-content]");
+
+  openModalButton.addEventListener("click", () => {
+    modal.classList.add("is-open");
+  });
+
+  closeModalButton.addEventListener("click", () => {
+    modal.classList.remove("is-open");
+  });
+
+  modal.addEventListener("click", (event) => {
+    if (event.target === modal) {
+      modal.classList.remove("is-open");
+    }
+  });
+
+  tabButtons.forEach((button) => {
+    button.addEventListener("click", () => {
+      const tab = button.dataset.tabButton;
+
+      tabButtons.forEach((item) => item.classList.remove("active"));
+      tabContents.forEach((item) => item.classList.remove("active"));
+
+      button.classList.add("active");
+      document.querySelector(`[data-tab-content="${tab}"]`).classList.add("active");
+    });
+  });
+</script>
+{% endblock %}

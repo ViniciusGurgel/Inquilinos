@@ -1,0 +1,150 @@
+{% extends "base.html" %}
+
+{% block styles %}
+<link rel="stylesheet" href="/static/css/dashboard.css">
+{% endblock %}
+
+{% block content %}
+<section class="dashboard-page">
+  <div class="page-title">
+    <h1>Dashboard</h1>
+    <p>Visão geral da sua gestão imobiliária</p>
+  </div>
+
+  <div class="stats-grid">
+    <div class="stats-card">
+      <div class="stats-info">
+        <span>Total de Imóveis</span>
+        <strong>{{ total_imoveis }}</strong>
+      </div>
+
+      <div class="stats-icon stats-blue">
+        <i data-lucide="building-2"></i>
+      </div>
+    </div>
+
+    <div class="stats-card">
+      <div class="stats-info">
+        <span>Inquilinos Ativos</span>
+        <strong>{{ total_inquilinos }}</strong>
+      </div>
+
+      <div class="stats-icon stats-green">
+        <i data-lucide="users"></i>
+      </div>
+    </div>
+
+    <div class="stats-card">
+      <div class="stats-info">
+        <span>Receita Mensal</span>
+        <strong>{{ receita_mensal }}</strong>
+      </div>
+
+      <div class="stats-icon stats-green">
+        <i data-lucide="dollar-sign"></i>
+      </div>
+    </div>
+
+    <div class="stats-card">
+      <div class="stats-info">
+        <span>Pagamentos Pendentes</span>
+        <strong>{{ pagamentos_pendentes + pagamentos_atrasados }}</strong>
+      </div>
+
+      <div class="stats-icon stats-orange">
+        <i data-lucide="clock"></i>
+      </div>
+    </div>
+  </div>
+
+  <div class="dashboard-grid">
+    <section class="dashboard-card">
+      <h2>Próximos Vencimentos</h2>
+
+      {% if vencimentos %}
+        <div class="vencimentos-list">
+          {% for item in vencimentos %}
+            <div class="vencimento-item">
+              <div>
+                <strong>{{ item.imovel_nome }}</strong>
+                <span>{{ item.inquilino_nome }}</span>
+              </div>
+
+              <div class="vencimento-valor">
+                <strong>{{ item.valor }}</strong>
+
+                {% if item.status == "atrasado" %}
+                  <span class="text-danger">Atrasado {{ item.dias_atraso }} dias</span>
+                {% else %}
+                  <span class="text-warning">Vence {{ item.data_vencimento }}</span>
+                {% endif %}
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      {% else %}
+        <p class="empty-text">Nenhum pagamento pendente.</p>
+      {% endif %}
+    </section>
+
+    <section class="dashboard-card">
+      <h2>Resumo</h2>
+
+      <div class="resumo-list">
+        <div>
+          <span>Contratos Ativos</span>
+          <strong>{{ contratos_ativos }}</strong>
+        </div>
+
+        <div>
+          <span>Pagamentos Pendentes</span>
+          <strong class="text-warning">{{ pagamentos_pendentes }}</strong>
+        </div>
+
+        <div>
+          <span>Pagamentos Atrasados</span>
+          <strong class="text-danger">{{ pagamentos_atrasados }}</strong>
+        </div>
+
+        <div class="resumo-total">
+          <span>Receita do Mês</span>
+          <strong class="text-success">{{ receita_mensal }}</strong>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  {% if interessados %}
+    <section class="dashboard-card interessados-card">
+      <h2>Interessados em Imóveis</h2>
+
+      <div class="interessados-list">
+        {% for interessado in interessados %}
+          <div class="interessado-item">
+            <div>
+              <strong>{{ interessado.nome }}</strong>
+
+              <a
+                href="{{ interessado.whatsapp_link }}"
+                target="_blank"
+                class="telefone-link"
+              >
+                <i data-lucide="message-circle"></i>
+                {{ interessado.telefone }}
+              </a>
+
+              <p>{{ interessado.descricao }}</p>
+            </div>
+
+            <form method="post" action="/interessados/{{ interessado.id }}/deletar">
+              <button type="submit" class="delete-button" title="Remover interessado">
+                <i data-lucide="trash-2"></i>
+              </button>
+            </form>
+          </div>
+        {% endfor %}
+      </div>
+    </section>
+  {% endif %}
+</section>
+{% endblock %}

@@ -12,10 +12,31 @@
       <p>Controle de pagamentos e histórico financeiro</p>
     </div>
 
-    <button type="button" class="primary-button" data-open-modal>
-      <i data-lucide="plus"></i>
-      Novo Pagamento
-    </button>
+    <div class="header-actions">
+      <button type="button" class="secondary-button" data-open-report-modal>
+        <i data-lucide="file-down"></i>
+        Gerar Relatório
+      </button>
+
+      <button type="button" class="primary-button" data-open-modal>
+        <i data-lucide="plus"></i>
+        Novo Pagamento
+      </button>
+    </div>
+  </div>
+
+  <div class="month-switcher">
+    <a href="/pagamentos?mes={{ mes_anterior }}" class="month-button month-button-left" title="Mês anterior">
+      <i data-lucide="chevron-left"></i>
+    </a>
+
+    <div class="month-title">
+      {{ mes_titulo }}
+    </div>
+
+    <a href="/pagamentos?mes={{ proximo_mes }}" class="month-button month-button-right" title="Próximo mês">
+      <i data-lucide="chevron-right"></i>
+    </a>
   </div>
 
   <div class="payments-summary">
@@ -47,6 +68,7 @@
   <section class="table-card">
     <div class="table-header">
       <h2>Lista de Pagamentos</h2>
+      <p>Pagamentos referentes a {{ mes_titulo }}</p>
     </div>
 
     {% if pagamentos %}
@@ -56,7 +78,6 @@
             <tr>
               <th>Inquilino</th>
               <th>Imóvel</th>
-              <th>Mês</th>
               <th>Vencimento</th>
               <th>Valor</th>
               <th>Status</th>
@@ -73,8 +94,6 @@
                 </td>
 
                 <td>{{ pagamento.imovel_nome }}</td>
-
-                <td>{{ pagamento.mes_referencia }}</td>
 
                 <td>{{ pagamento.data_vencimento }}</td>
 
@@ -124,7 +143,7 @@
                       </a>
                     {% endif %}
 
-                    <a href="/pagamentos?editar_id={{ pagamento.id }}" class="icon-button" title="Editar pagamento">
+                    <a href="/pagamentos?mes={{ mes_selecionado }}&editar_id={{ pagamento.id }}" class="icon-button" title="Editar pagamento">
                       <i data-lucide="pencil"></i>
                     </a>
 
@@ -145,8 +164,8 @@
         <div>
           <i data-lucide="dollar-sign"></i>
         </div>
-        <h2>Nenhum pagamento cadastrado</h2>
-        <p>Clique em novo pagamento para registrar uma cobrança.</p>
+        <h2>Nenhum pagamento encontrado</h2>
+        <p>Nenhum pagamento cadastrado para {{ mes_titulo }}.</p>
       </div>
     {% endif %}
   </section>
@@ -185,7 +204,7 @@
 
       <label>
         Mês de Referência
-        <input type="month" name="mes_referencia" required>
+        <input type="month" name="mes_referencia" value="{{ mes_selecionado }}" required>
       </label>
 
       <label>
@@ -231,6 +250,46 @@
   </div>
 </div>
 
+<!-- MODAL DE RELATÓRIO -->
+<div class="modal-backdrop" data-report-modal>
+  <div class="modal-card">
+    <div class="modal-header">
+      <div>
+        <h2>Gerar Relatório</h2>
+        <p>Escolha o período dos pagamentos realizados</p>
+      </div>
+
+      <button type="button" class="close-button" data-close-report-modal>
+        <i data-lucide="x"></i>
+      </button>
+    </div>
+
+    <form method="get" action="/pagamentos/relatorio" target="_blank" class="modal-form">
+      <div class="report-range">
+        <label>
+          Mês Inicial
+          <input type="month" name="mes_inicio" value="{{ mes_selecionado }}" required>
+        </label>
+
+        <label>
+          Mês Final
+          <input type="month" name="mes_fim" value="{{ mes_selecionado }}" required>
+        </label>
+      </div>
+
+      <div class="modal-actions">
+        <button type="button" class="secondary-button" data-close-report-modal>
+          Cancelar
+        </button>
+
+        <button type="submit" class="submit-button">
+          Gerar PDF
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
 <!-- MODAL DE EDITAR PAGAMENTO -->
 {% if pagamento_edicao %}
 <div class="modal-backdrop is-open">
@@ -241,7 +300,7 @@
         <p>Altere os dados do pagamento selecionado</p>
       </div>
 
-      <a href="/pagamentos" class="close-button">
+      <a href="/pagamentos?mes={{ mes_selecionado }}" class="close-button">
         <i data-lucide="x"></i>
       </a>
     </div>
@@ -336,7 +395,7 @@
       </label>
 
       <div class="modal-actions">
-        <a href="/pagamentos" class="secondary-button">
+        <a href="/pagamentos?mes={{ mes_selecionado }}" class="secondary-button">
           Cancelar
         </a>
 
@@ -352,24 +411,64 @@
 
 {% block scripts %}
 <script>
+  // MODAL DE NOVO PAGAMENTO
   const modal = document.querySelector("[data-modal]");
   const openModalButton = document.querySelector("[data-open-modal]");
   const closeModalButtons = document.querySelectorAll("[data-close-modal]");
 
-  openModalButton.addEventListener("click", () => {
-    modal.classList.add("is-open");
-  });
-
-  closeModalButtons.forEach((button) => {
-    button.addEventListener("click", () => {
-      modal.classList.remove("is-open");
+  if (modal && openModalButton) {
+    openModalButton.addEventListener("click", () => {
+      modal.classList.add("is-open");
     });
-  });
 
-  modal.addEventListener("click", (event) => {
-    if (event.target === modal) {
-      modal.classList.remove("is-open");
-    }
+    closeModalButtons.forEach((button) => {
+      button.addEventListener("click", () => {
+        modal.classList.remove("is-open");
+      });
+    });
+
+    modal.addEventListener("click", (event) => {
+      if (event.target === modal) {
+        modal.classList.remove("is-open");
+      }
+    });
+  }
+
+  // MODAL DE RELATÓRIO
+  const reportModal = document.querySelector("[data-report-modal]");
+  const openReportModalButton = document.querySelector("[data-open-report-modal]");
+  const closeReportModalButtons = document.querySelectorAll("[data-close-report-modal]");
+
+  if (reportModal && openReportModalButton) {
+    openReportModalButton.addEventListener("click", () => {
+      reportModal.classList.add("is-open");
+    });
+
+    closeReportModalButtons.forEach((button) => {
+      button.addEventListener("click", () => {
+        reportModal.classList.remove("is-open");
+      });
+    });
+
+    reportModal.addEventListener("click", (event) => {
+      if (event.target === reportModal) {
+        reportModal.classList.remove("is-open");
+      }
+    });
+  }
+
+  // MOSTRAR NOME DO ARQUIVO DO COMPROVANTE, CASO USE O CAMPO BONITO
+  document.querySelectorAll(".file-upload-input").forEach((input) => {
+    input.addEventListener("change", () => {
+      const box = input.closest(".file-field");
+      const fileNameText = box.querySelector("[data-file-name]");
+
+      if (input.files && input.files.length > 0) {
+        fileNameText.textContent = input.files[0].name;
+      } else {
+        fileNameText.textContent = "Nenhum arquivo selecionado";
+      }
+    });
   });
 </script>
 {% endblock %}

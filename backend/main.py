@@ -7,7 +7,7 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
 from backend.database import init_db
-from backend.routes import dashboard, imoveis, inquilinos, pagamentos, contratos
+from backend.routes import dashboard, imoveis, inquilinos, pagamentos, contratos, em_breve
 
 
 BASE_DIR = Path(__file__).resolve().parent
@@ -45,3 +45,4 @@ app.include_router(imoveis.router)
 app.include_router(inquilinos.router)
 app.include_router(pagamentos.router)
 app.include_router(contratos.router)
+app.include_router(em_breve.router)

@@ -1,0 +1,192 @@
+{% extends "base.html" %}
+
+{% block styles %}
+<link rel="stylesheet" href="/static/css/inquilinos.css">
+{% endblock %}
+
+{% block content %}
+<section class="inquilinos-page">
+  <div class="page-header">
+    <div>
+      <h1>Inquilinos</h1>
+      <p>Gerencie seus inquilinos ativos</p>
+    </div>
+
+    <button type="button" class="primary-button" data-open-modal>
+      <i data-lucide="plus"></i>
+      Adicionar
+    </button>
+  </div>
+
+  <form method="get" action="/inquilinos" class="search-box">
+    <i data-lucide="search"></i>
+    <input
+      type="text"
+      name="busca"
+      value="{{ busca or '' }}"
+      placeholder="Buscar por nome, imóvel ou e-mail..."
+    >
+  </form>
+
+  {% if inquilinos %}
+    <div class="inquilinos-grid">
+      {% for inquilino in inquilinos %}
+        <article class="inquilino-card">
+          <div class="card-header">
+            <div class="avatar">
+              {{ inquilino.iniciais }}
+            </div>
+
+            <div>
+              <h2>{{ inquilino.nome }}</h2>
+              <p>Desde {{ inquilino.data_inicio }}</p>
+            </div>
+          </div>
+
+          <div class="card-info">
+            <a href="https://wa.me/55{{ inquilino.telefone_whatsapp }}" target="_blank" class="info-line whatsapp-link">
+              <i data-lucide="message-circle"></i>
+              <span>{{ inquilino.telefone }}</span>
+            </a>
+
+            <div class="info-line">
+              <i data-lucide="mail"></i>
+              <span>{{ inquilino.email }}</span>
+            </div>
+
+            <div class="info-line">
+              <i data-lucide="building-2"></i>
+              <span>{{ inquilino.imovel_nome }}</span>
+            </div>
+
+            {% if inquilino.cpf %}
+              <div class="info-line">
+                <i data-lucide="id-card"></i>
+                <span>{{ inquilino.cpf }}</span>
+              </div>
+            {% endif %}
+          </div>
+
+          <div class="rent-box">
+            <span>Aluguel Mensal</span>
+            <strong>{{ inquilino.valor_aluguel }}</strong>
+          </div>
+        </article>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="empty-state">
+      <div>
+        <i data-lucide="users"></i>
+      </div>
+      <h2>Nenhum inquilino cadastrado</h2>
+      <p>Clique em adicionar para cadastrar um inquilino ou interessado.</p>
+    </div>
+  {% endif %}
+</section>
+
+<div class="modal-backdrop" data-modal>
+  <div class="modal-card">
+    <div class="modal-header">
+      <h2>Adicionar</h2>
+
+      <button type="button" class="close-button" data-close-modal>
+        <i data-lucide="x"></i>
+      </button>
+    </div>
+
+    <div class="tabs">
+      <button type="button" class="tab-button active" data-tab-button="inquilino">
+        Inquilino
+      </button>
+
+      <button type="button" class="tab-button" data-tab-button="interessado">
+        Interessado
+      </button>
+    </div>
+
+    <form method="post" action="/inquilinos/criar" class="modal-form tab-content active" data-tab-content="inquilino">
+      <label>
+        Nome Completo
+        <input type="text" name="nome" placeholder="Ex: João Silva" required>
+      </label>
+
+      <label>
+        Telefone
+        <input type="text" name="telefone" placeholder="(11) 98765-4321" required>
+      </label>
+
+      <label>
+        E-mail
+        <input type="email" name="email" placeholder="inquilino@email.com">
+      </label>
+
+      <label>
+        CPF
+        <input type="text" name="cpf" placeholder="000.000.000-00">
+      </label>
+
+      <button type="submit" class="submit-button">
+        Adicionar Inquilino
+      </button>
+    </form>
+
+    <form method="post" action="/interessados/criar" class="modal-form tab-content" data-tab-content="interessado">
+      <label>
+        Nome
+        <input type="text" name="nome" placeholder="Ex: João Silva" required>
+      </label>
+
+      <label>
+        Telefone
+        <input type="text" name="telefone" placeholder="(11) 98765-4321" required>
+      </label>
+
+      <label>
+        Descrição
+        <textarea name="descricao" placeholder="Ex: Quer uma kitnet de até R$ 1.200" required></textarea>
+      </label>
+
+      <button type="submit" class="submit-button">
+        Adicionar Interessado
+      </button>
+    </form>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  const modal = document.querySelector("[data-modal]");
+  const openModalButton = document.querySelector("[data-open-modal]");
+  const closeModalButton = document.querySelector("[data-close-modal]");
+  const tabButtons = document.querySelectorAll("[data-tab-button]");
+  const tabContents = document.querySelectorAll("[data-tab-content]");
+
+  openModalButton.addEventListener("click", () => {
+    modal.classList.add("is-open");
+  });
+
+  closeModalButton.addEventListener("click", () => {
+    modal.classList.remove("is-open");
+  });
+
+  modal.addEventListener("click", (event) => {
+    if (event.target === modal) {
+      modal.classList.remove("is-open");
+    }
+  });
+
+  tabButtons.forEach((button) => {
+    button.addEventListener("click", () => {
+      const tab = button.dataset.tabButton;
+
+      tabButtons.forEach((item) => item.classList.remove("active"));
+      tabContents.forEach((item) => item.classList.remove("active"));
+
+      button.classList.add("active");
+      document.querySelector(`[data-tab-content="${tab}"]`).classList.add("active");
+    });
+  });
+</script>
+{% endblock %}

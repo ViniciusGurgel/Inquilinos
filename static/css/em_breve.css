@@ -1,0 +1,122 @@
+.coming-soon-page {
+  min-height: calc(100vh - 120px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.coming-soon-card {
+  width: min(620px, 100%);
+  padding: 42px;
+  border: 1px solid #2b3a52;
+  border-radius: 8px;
+  background: #1d2a3d;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.28);
+  text-align: center;
+}
+
+.coming-soon-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 76px;
+  height: 76px;
+  margin: 0 auto 22px;
+  border-radius: 18px;
+  background: rgba(47, 125, 246, 0.14);
+  color: var(--primary);
+}
+
+.coming-soon-icon svg {
+  width: 36px;
+  height: 36px;
+}
+
+.coming-soon-label {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 28px;
+  padding: 0 12px;
+  border-radius: 999px;
+  background: rgba(246, 165, 26, 0.16);
+  color: #f6a51a;
+  font-size: 12px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.coming-soon-card h1 {
+  margin: 18px 0 12px;
+  color: var(--text);
+  font-size: 32px;
+  font-weight: 800;
+}
+
+.coming-soon-card p {
+  max-width: 480px;
+  margin: 0 auto;
+  color: var(--muted);
+  font-size: 15px;
+  line-height: 1.6;
+}
+
+.coming-soon-info {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  min-height: 48px;
+  margin-top: 26px;
+  padding: 0 16px;
+  border: 1px solid #2b3a52;
+  border-radius: 8px;
+  background: #111b2c;
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.coming-soon-info svg {
+  width: 18px;
+  height: 18px;
+  color: var(--primary);
+}
+
+.back-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 42px;
+  margin-top: 28px;
+  padding: 0 18px;
+  border-radius: 8px;
+  background: var(--primary);
+  color: #ffffff;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.back-button:hover {
+  filter: brightness(1.08);
+}
+
+.back-button svg {
+  width: 18px;
+  height: 18px;
+}
+
+@media (max-width: 620px) {
+  .coming-soon-card {
+    padding: 30px 22px;
+  }
+
+  .coming-soon-card h1 {
+    font-size: 26px;
+  }
+
+  .coming-soon-info {
+    align-items: flex-start;
+    text-align: left;
+  }
+}
