@@ -35,19 +35,39 @@
     </button>
   </div>
 
-  <form method="get" action="/imoveis" class="search-box">
+  <form method="get" action="/imoveis" class="search-filter-form">
     {% if condominio_atual %}
       <input type="hidden" name="condominio_id" value="{{ condominio_atual.id }}">
     {% endif %}
 
-    <i data-lucide="search"></i>
+    <div class="search-box">
+      <i data-lucide="search"></i>
 
-    <input
-      type="text"
-      name="busca"
-      value="{{ busca or '' }}"
-      placeholder="Buscar por nome, características, tipo ou inquilino..."
-    >
+      <input
+        type="text"
+        name="busca"
+        value="{{ busca or '' }}"
+        placeholder="Buscar por nome, características, tipo ou inquilino..."
+      >
+    </div>
+
+    <div class="select-wrapper status-search-filter">
+      <select name="status" onchange="this.form.submit()">
+        <option value="todos" {% if filtro_status == "todos" or not filtro_status %}selected{% endif %}>
+          Todos
+        </option>
+
+        <option value="disponivel" {% if filtro_status == "disponivel" %}selected{% endif %}>
+          Disponíveis
+        </option>
+
+        <option value="ocupado" {% if filtro_status == "ocupado" %}selected{% endif %}>
+          Ocupados
+        </option>
+      </select>
+
+      <i data-lucide="chevron-down"></i>
+    </div>
   </form>
 
   {% if not condominio_atual %}
@@ -113,7 +133,7 @@
       {% for imovel in imoveis %}
         <article class="imovel-card clickable-card">
           <a
-            href="/imoveis?detalhe_id={{ imovel.id }}{% if condominio_atual %}&condominio_id={{ condominio_atual.id }}{% endif %}"
+            href="/imoveis?detalhe_id={{ imovel.id }}{% if condominio_atual %}&condominio_id={{ condominio_atual.id }}{% endif %}{% if filtro_status %}&status={{ filtro_status }}{% endif %}{% if busca %}&busca={{ busca|urlencode }}{% endif %}"
             class="card-fill-link"
             aria-label="Abrir imóvel {{ imovel.nome }}"
           ></a>
@@ -141,6 +161,11 @@
             <div class="info-line">
               <i data-lucide="bed-double"></i>
               <span>{{ imovel.endereco }}</span>
+            </div>
+
+            <div class="info-line">
+              <i data-lucide="banknote"></i>
+              <span>R$ {{ "%.2f"|format(imovel.valor_aluguel or 0) }}</span>
             </div>
 
             {% if imovel.condominio_nome and not condominio_atual %}
@@ -276,6 +301,18 @@
       </label>
 
       <label>
+        Valor do Aluguel
+        <input
+          type="number"
+          name="valor_aluguel"
+          step="0.01"
+          min="0"
+          placeholder="Ex: 1200.00"
+          required
+        >
+      </label>
+
+      <label>
         Características do Imóvel
         <textarea
           name="endereco"
@@ -328,7 +365,6 @@
   </div>
 </div>
 
-<!-- MODAL DE DETALHES DO IMÓVEL -->
 <!-- MODAL DE DETALHES DO IMÓVEL -->
 {% if imovel_detalhe %}
 <div class="modal-backdrop is-open">
@@ -385,6 +421,15 @@
             <div>
               <small>Características do Imóvel</small>
               <strong>{{ imovel_detalhe.endereco }}</strong>
+            </div>
+          </div>
+
+          <div class="details-info-box">
+            <i data-lucide="banknote"></i>
+
+            <div>
+              <small>Valor do Aluguel</small>
+              <strong>R$ {{ "%.2f"|format(imovel_detalhe.valor_aluguel or 0) }}</strong>
             </div>
           </div>
 
@@ -454,6 +499,18 @@
 
                 <i data-lucide="chevron-down"></i>
               </div>
+            </label>
+
+            <label>
+              Valor do Aluguel
+              <input
+                type="number"
+                name="valor_aluguel"
+                step="0.01"
+                min="0"
+                value="{{ imovel_detalhe.valor_aluguel or 0 }}"
+                required
+              >
             </label>
 
             <label>

@@ -140,7 +140,7 @@
           <select name="imovel_id" required>
             <option value="" disabled selected hidden>Selecione o imóvel</option>
             {% for imovel in imoveis %}
-              <option value="{{ imovel.id }}">
+              <option value="{{ imovel.id }}" data-valor="{{ imovel.valor_aluguel or 0 }}">
                 {{ imovel.nome }}
                 {% if imovel.condominio_nome %}
                   - {{ imovel.condominio_nome }}
@@ -168,6 +168,7 @@
         <input
           type="number"
           name="valor_aluguel"
+          id="valor_aluguel_input"
           min="0"
           step="0.01"
           placeholder="Ex: 1200"
@@ -210,6 +211,8 @@
   const modal = document.querySelector("[data-modal]");
   const openModalButton = document.querySelector("[data-open-modal]");
   const closeModalButton = document.querySelector("[data-close-modal]");
+  const imovelSelect = document.querySelector("#imovel_id");
+  const valorAluguelInput = document.querySelector("#valor_aluguel");
 
   openModalButton.addEventListener("click", () => {
     modal.classList.add("is-open");
@@ -224,5 +227,27 @@
       modal.classList.remove("is-open");
     }
   });
+  
+  function preencherValorAluguel() {
+    if (!imovelSelect || !valorAluguelInput) {
+      return;
+    }
+
+    const optionSelecionada = imovelSelect.options[imovelSelect.selectedIndex];
+
+    if (!optionSelecionada) {
+      return;
+    }
+
+    const valor = optionSelecionada.dataset.valor;
+
+    if (valor !== undefined && valor !== "") {
+      valorAluguelInput.value = Number(valor).toFixed(2);
+    }
+  }
+
+  if (imovelSelect && valorAluguelInput) {
+    imovelSelect.addEventListener("change", preencherValorAluguel);
+  }
 </script>
 {% endblock %}

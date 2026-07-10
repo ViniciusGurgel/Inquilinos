@@ -41,6 +41,7 @@ def init_db():
             tipo TEXT,
             endereco TEXT,
             status TEXT NOT NULL DEFAULT 'disponivel',
+            valor_aluguel REAL NOT NULL DEFAULT 0,
             condominio_id INTEGER,
             created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
             FOREIGN KEY (condominio_id) REFERENCES condominios(id) ON DELETE SET NULL
