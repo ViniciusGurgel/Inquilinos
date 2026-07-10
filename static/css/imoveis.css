@@ -11,6 +11,12 @@
   gap: 16px;
 }
 
+.page-title-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
 .page-header h1 {
   margin: 0;
   color: var(--text);
@@ -21,6 +27,28 @@
 .page-header p {
   margin: 8px 0 0;
   color: var(--muted);
+}
+
+.back-icon-button {
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  border: 1px solid #2b3a52;
+  border-radius: 8px;
+  background: #111b2c;
+  color: var(--text);
+  text-decoration: none;
+  flex-shrink: 0;
+}
+
+.back-icon-button:hover {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.back-icon-button svg {
+  width: 20px;
+  height: 20px;
 }
 
 .primary-button,
@@ -137,6 +165,24 @@
 
 .condominio-card {
   border: 2px solid var(--condominio-color, #2f7df6);
+}
+
+.clickable-card {
+  position: relative;
+  cursor: pointer;
+}
+
+.card-fill-link {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  border-radius: inherit;
+}
+
+.above-card-link,
+.card-actions {
+  position: relative;
+  z-index: 2;
 }
 
 .condominio-card-header {
@@ -393,7 +439,7 @@
   color: var(--muted);
 }
 
-/* MODAL */
+/* MODAIS */
 
 .modal-backdrop {
   position: fixed !important;
@@ -443,6 +489,7 @@
   background: transparent;
   color: var(--muted);
   cursor: pointer;
+  text-decoration: none;
 }
 
 .close-button:hover {
@@ -580,6 +627,281 @@
   line-height: 1.4;
 }
 
+/* MODAL DE DETALHES DO IMÓVEL */
+
+.details-modal,
+.compact-details-modal {
+  width: min(700px, calc(100vw - 32px));
+  padding: 24px;
+}
+
+.details-modal .modal-header {
+  margin-bottom: 14px;
+}
+
+.details-tabs {
+  margin-bottom: 8px;
+}
+
+.details-tabs .tab-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+}
+
+.details-main {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding-top: 2px;
+}
+
+.details-heading {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-top: 4px;
+}
+
+.details-heading h3 {
+  margin: 0;
+  color: var(--text);
+  font-size: 24px;
+  line-height: 1.1;
+}
+
+.details-heading span {
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.details-heading .status-badge {
+  margin-left: auto;
+}
+
+.large-icon {
+  width: 64px;
+  height: 64px;
+}
+
+.large-icon svg {
+  width: 30px;
+  height: 30px;
+}
+
+.details-info-box {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 64px;
+  padding: 14px;
+  border-radius: 8px;
+  background: #111b2c;
+  border: 1px solid #2b3a52;
+}
+
+.details-info-box svg {
+  width: 20px;
+  height: 20px;
+  color: var(--primary);
+  flex-shrink: 0;
+}
+
+.details-info-box small {
+  display: block;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.details-info-box strong {
+  display: block;
+  margin-top: 4px;
+  color: var(--text);
+  font-size: 15px;
+}
+
+.details-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-top: 24px;
+}
+
+.details-actions form {
+  margin: 0;
+}
+
+.edit-wide-button,
+.delete-wide-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  min-height: 42px;
+  border: 0;
+  border-radius: 8px;
+  color: #ffffff;
+  cursor: pointer;
+  font-weight: 700;
+}
+
+.edit-wide-button {
+  background: var(--primary);
+}
+
+.delete-wide-button {
+  background: #ef4444;
+}
+
+.edit-wide-button:hover,
+.delete-wide-button:hover {
+  filter: brightness(1.08);
+}
+
+.edit-wide-button svg,
+.delete-wide-button svg {
+  width: 18px;
+  height: 18px;
+}
+
+.details-edit-panel {
+  display: none;
+  margin-top: 8px;
+  padding-top: 18px;
+  border-top: 1px solid #2b3a52;
+}
+
+.details-edit-panel.is-open {
+  display: block;
+}
+
+.details-edit-panel .edit-details-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 0;
+  padding-top: 0;
+  border-top: 0;
+}
+
+/* FOTOS DO IMÓVEL */
+
+.photos-tab {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.photo-upload-form {
+  display: grid;
+  grid-template-columns: 1fr 180px;
+  gap: 12px;
+  align-items: center;
+}
+
+.photo-upload-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 42px;
+  border-radius: 8px;
+  background: #111b2c;
+  color: var(--text);
+  border: 1px dashed #3b4d68;
+  cursor: pointer;
+  font-weight: 700;
+}
+
+.photo-upload-button:hover {
+  border-color: var(--primary);
+  background: #142033;
+}
+
+.photo-upload-button input {
+  display: none;
+}
+
+.photo-upload-button svg {
+  width: 18px;
+  height: 18px;
+}
+
+.photos-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+}
+
+.photo-card {
+  position: relative;
+  overflow: hidden;
+  height: 150px;
+  border: 1px solid #2b3a52;
+  border-radius: 8px;
+  background: #111b2c;
+}
+
+.photo-card img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.photo-card form {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  margin: 0;
+}
+
+.photo-delete-button {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border: 0;
+  border-radius: 8px;
+  background: rgba(239, 68, 68, 0.9);
+  color: #ffffff;
+  cursor: pointer;
+}
+
+.photo-delete-button svg {
+  width: 16px;
+  height: 16px;
+}
+
+.photos-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 240px;
+  color: var(--muted);
+  text-align: center;
+}
+
+.photos-empty svg {
+  width: 52px;
+  height: 52px;
+  margin-bottom: 14px;
+}
+
+.photos-empty strong {
+  color: var(--text);
+  font-size: 16px;
+}
+
+.photos-empty span {
+  margin-top: 6px;
+  font-size: 14px;
+}
+
+/* INPUT NUMBER */
+
 input[type="number"]::-webkit-inner-spin-button,
 input[type="number"]::-webkit-outer-spin-button {
   -webkit-appearance: none;
@@ -591,6 +913,8 @@ input[type="number"] {
   -moz-appearance: textfield;
 }
 
+/* RESPONSIVO */
+
 @media (max-width: 1250px) {
   .condominios-grid,
   .imoveis-grid {
@@ -598,8 +922,32 @@ input[type="number"] {
   }
 }
 
+@media (max-width: 760px) {
+  .photo-upload-form {
+    grid-template-columns: 1fr;
+  }
+
+  .photos-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .details-heading {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .details-heading .status-badge {
+    margin-left: 0;
+  }
+
+  .details-actions {
+    grid-template-columns: 1fr;
+  }
+}
+
 @media (max-width: 620px) {
-  .page-header {
+  .page-header,
+  .page-title-row {
     align-items: flex-start;
     flex-direction: column;
   }
@@ -622,5 +970,61 @@ input[type="number"] {
   .card-actions {
     width: 100%;
     justify-content: flex-end;
+  }
+}
+
+.details-view-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.details-view-panel.is-hidden {
+  display: none;
+}
+
+.details-edit-panel {
+  display: none;
+}
+
+.details-edit-panel.is-open {
+  display: block;
+}
+
+.details-edit-panel .edit-details-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 0;
+  padding-top: 0;
+  border-top: 0;
+}
+
+.edit-form-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.secondary-edit-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 42px;
+  border: 0;
+  border-radius: 8px;
+  background: #334155;
+  color: #ffffff;
+  cursor: pointer;
+  font-weight: 700;
+}
+
+.secondary-edit-button:hover {
+  filter: brightness(1.08);
+}
+
+@media (max-width: 760px) {
+  .edit-form-actions {
+    grid-template-columns: 1fr;
   }
 }
