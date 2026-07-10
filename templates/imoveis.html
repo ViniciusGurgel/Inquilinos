@@ -165,7 +165,7 @@
 
             <div class="info-line">
               <i data-lucide="banknote"></i>
-              <span>R$ {{ "%.2f"|format(imovel.valor_aluguel or 0) }}</span>
+              <span>R$ {{ "{:,.2f}".format(imovel.valor_aluguel or 0).replace(",", ".") }}</span>
             </div>
 
             {% if imovel.condominio_nome and not condominio_atual %}
@@ -429,7 +429,7 @@
 
             <div>
               <small>Valor do Aluguel</small>
-              <strong>R$ {{ "%.2f"|format(imovel_detalhe.valor_aluguel or 0) }}</strong>
+              <strong>R$ {{ "{:,.2f}".format(imovel_detalhe.valor_aluguel or 0).replace(",", ".") }}</strong>
             </div>
           </div>
 
