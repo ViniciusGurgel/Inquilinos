@@ -465,3 +465,29 @@ def deletar_condominio(condominio_id: int):
         conn.commit()
 
     return redirect_to("/imoveis")
+
+
+@router.post("/condominios/{condominio_id}/editar")
+def editar_condominio(
+    request: Request,
+    condominio_id: int,
+    nome: str = Form(...)
+):
+    nome = nome.strip()
+
+    if not nome:
+        return redirect_to(request.headers.get("referer", "/imoveis"))
+
+    with get_connection() as conn:
+        conn.execute("""
+            UPDATE condominios
+            SET nome = ?
+            WHERE id = ?
+        """, (
+            nome,
+            condominio_id,
+        ))
+
+        conn.commit()
+
+    return redirect_to(request.headers.get("referer", f"/imoveis?condominio_id={condominio_id}"))

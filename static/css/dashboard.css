@@ -279,3 +279,19 @@
     text-align: left;
   }
 }
+
+.summary-row strong.success {
+  color: #22c55e;
+}
+
+.summary-row strong.danger {
+  color: #ef4444;
+}
+
+.summary-row strong.vacancy {
+  color: #ff4d4d;
+}
+
+.summary-row strong.maintenance {
+  color: #38bdf8;
+}

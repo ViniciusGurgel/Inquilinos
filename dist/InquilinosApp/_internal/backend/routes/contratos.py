@@ -101,6 +101,7 @@ def pagina_contratos(request: Request, busca: str = ""):
             SELECT
                 im.id,
                 im.nome,
+                im.valor_aluguel,
                 c.nome AS condominio_nome
             FROM imoveis im
             LEFT JOIN condominios c ON c.id = im.condominio_id

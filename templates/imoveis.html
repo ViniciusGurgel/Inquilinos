@@ -14,7 +14,35 @@
         </a>
 
         <div>
-          <h1>{{ condominio_atual.nome }}</h1>
+          <form
+            method="post"
+            action="/condominios/{{ condominio_atual.id }}/editar"
+            class="condominio-name-form"
+            data-condominio-name-form
+          >
+            <div class="condominio-name-view" data-condominio-name-view>
+              <h1>{{ condominio_atual.nome }}</h1>
+
+              <button
+                type="button"
+                class="edit-condominio-name-button"
+                title="Editar nome do condomínio"
+                data-edit-condominio-name
+              >
+                <i data-lucide="pencil"></i>
+              </button>
+            </div>
+
+            <input
+              type="text"
+              name="nome"
+              value="{{ condominio_atual.nome }}"
+              class="condominio-name-input"
+              required
+              data-condominio-name-input
+            >
+          </form>
+
           <p>Gerencie os imóveis deste condomínio</p>
         </div>
       {% else %}
@@ -643,5 +671,34 @@
       }
     });
   });
+  
+  const condominioNameForm = document.querySelector("[data-condominio-name-form]");
+  const condominioNameView = document.querySelector("[data-condominio-name-view]");
+  const editCondominioNameButton = document.querySelector("[data-edit-condominio-name]");
+  const condominioNameInput = document.querySelector("[data-condominio-name-input]");
+
+  if (condominioNameForm && condominioNameView && editCondominioNameButton && condominioNameInput) {
+    editCondominioNameButton.addEventListener("click", () => {
+      condominioNameForm.classList.add("is-editing");
+      condominioNameInput.focus();
+      condominioNameInput.select();
+    });
+
+    condominioNameInput.addEventListener("keydown", (event) => {
+      if (event.key === "Enter") {
+        event.preventDefault();
+        condominioNameForm.submit();
+      }
+
+      if (event.key === "Escape") {
+        condominioNameForm.classList.remove("is-editing");
+        condominioNameInput.value = condominioNameView.querySelector("h1").textContent.trim();
+      }
+    });
+
+    condominioNameInput.addEventListener("blur", () => {
+      condominioNameForm.classList.remove("is-editing");
+    });
+  }
 </script>
 {% endblock %}

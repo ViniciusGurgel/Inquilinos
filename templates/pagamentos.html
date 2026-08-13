@@ -117,11 +117,15 @@
                     </span>
                   {% endif %}
                 </td>
-
                 <td>
                   <strong>{{ pagamento.total }}</strong>
-                </td>
 
+                  {% if pagamento.saldo_anterior_numero > 0 and pagamento.status != "pago" %}
+                    <small class="debt-warning-text" style="color: #ef4444 !important;">
+                      + saldo anterior
+                    </small>
+                  {% endif %}
+                </td>
                 <td>
                   <div class="actions-cell">
                     {% if pagamento.status != "pago" %}

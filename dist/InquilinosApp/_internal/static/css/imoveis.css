@@ -1028,3 +1028,20 @@ input[type="number"] {
     grid-template-columns: 1fr;
   }
 }
+
+.search-filter-form {
+  display: grid;
+  grid-template-columns: 1fr 180px;
+  gap: 12px;
+  align-items: center;
+}
+
+.status-search-filter select {
+  height: 46px;
+}
+
+@media (max-width: 760px) {
+  .search-filter-form {
+    grid-template-columns: 1fr;
+  }
+}

@@ -1,4 +1,5 @@
 from datetime import date
+from calendar import monthrange
 import shutil
 import re
 
@@ -21,6 +22,7 @@ from backend.database import (
     marcar_pagamento_como_pago,
     COMPROVANTES_DIR,
 )
+from dist.InquilinosApp._internal.backend.routes import pagamentos
 
 
 router = APIRouter()
@@ -98,6 +100,72 @@ def formatar_mes_titulo(data_base):
     nome_mes = MESES_PT.get(data_base.month, "")
     return f"{nome_mes} de {data_base.year}"
 
+def montar_data_vencimento(ano, mes, dia_vencimento):
+    ultimo_dia = monthrange(ano, mes)[1]
+    dia = min(dia_vencimento, ultimo_dia)
+    return date(ano, mes, dia).isoformat()
+
+
+def garantir_pagamentos_do_mes(conn, mes_referencia):
+    ano, mes = map(int, mes_referencia.split("-"))
+
+    contratos = conn.execute("""
+        SELECT
+            c.id,
+            c.imovel_id,
+            c.inquilino_id,
+            c.valor_aluguel,
+            c.dia_vencimento
+        FROM contratos c
+        WHERE c.status = 'ativo'
+    """).fetchall()
+
+    for contrato in contratos:
+        pagamento_existente = conn.execute("""
+            SELECT id
+            FROM pagamentos
+            WHERE contrato_id = ?
+            AND mes_referencia = ?
+        """, (
+            contrato["id"],
+            mes_referencia,
+        )).fetchone()
+
+        if pagamento_existente:
+            continue
+
+        data_vencimento = montar_data_vencimento(
+            ano,
+            mes,
+            contrato["dia_vencimento"]
+        )
+
+        conn.execute("""
+            INSERT INTO pagamentos (
+                contrato_id,
+                imovel_id,
+                inquilino_id,
+                mes_referencia,
+                valor_cobrado,
+                valor_pago,
+                data_vencimento,
+                status,
+                comprovante_arquivo,
+                observacao
+            )
+            VALUES (?, ?, ?, ?, ?, 0, ?, 'pendente', NULL, ?)
+        """, (
+            contrato["id"],
+            contrato["imovel_id"],
+            contrato["inquilino_id"],
+            mes_referencia,
+            contrato["valor_aluguel"],
+            data_vencimento,
+            "Pagamento gerado automaticamente",
+        ))
+
+    conn.commit()
+
 
 def calcular_status_pagamento(pagamento):
     if pagamento["status"] == "pago":
@@ -130,6 +198,8 @@ def pagina_pagamentos(
     mes_titulo = formatar_mes_titulo(mes_base)
 
     with get_connection() as conn:
+        garantir_pagamentos_do_mes(conn, mes_selecionado)
+        
         pagamentos = rows_to_list(conn.execute("""
             SELECT
                 p.id,
@@ -145,7 +215,28 @@ def pagina_pagamentos(
                 p.comprovante_arquivo,
                 p.observacao,
                 i.nome AS inquilino_nome,
-                im.nome AS imovel_nome
+                im.nome AS imovel_nome,
+
+                COALESCE((
+                    SELECT SUM(p2.valor_cobrado)
+                    FROM pagamentos p2
+                    WHERE p2.contrato_id = p.contrato_id
+                    AND p2.status != 'pago'
+                    AND p2.mes_referencia < p.mes_referencia
+                ), 0) AS saldo_anterior,
+
+                CASE
+                    WHEN p.status = 'pago' THEN p.valor_cobrado
+                    ELSE
+                        p.valor_cobrado + COALESCE((
+                            SELECT SUM(p2.valor_cobrado)
+                            FROM pagamentos p2
+                            WHERE p2.contrato_id = p.contrato_id
+                            AND p2.status != 'pago'
+                            AND p2.mes_referencia < p.mes_referencia
+                        ), 0)
+                END AS valor_total_acumulado
+
             FROM pagamentos p
             LEFT JOIN inquilinos i ON i.id = p.inquilino_id
             LEFT JOIN imoveis im ON im.id = p.imovel_id
@@ -202,15 +293,20 @@ def pagina_pagamentos(
     for pagamento in pagamentos:
         valor_cobrado = float(pagamento["valor_cobrado"] or 0)
         valor_pago = float(pagamento["valor_pago"] or 0)
+        saldo_anterior = float(pagamento["saldo_anterior"] or 0)
+        valor_total_acumulado = float(pagamento["valor_total_acumulado"] or valor_cobrado)
 
         status_calculado = calcular_status_pagamento(pagamento)
 
         pagamento["status"] = status_calculado
         pagamento["tem_comprovante"] = bool(pagamento["comprovante_arquivo"])
         pagamento["data_vencimento"] = formatar_data(pagamento["data_vencimento"])
+
         pagamento["valor_cobrado"] = formatar_moeda(valor_cobrado)
         pagamento["valor_pago"] = formatar_moeda(valor_pago)
-        pagamento["total"] = formatar_moeda(valor_cobrado)
+        pagamento["saldo_anterior"] = formatar_moeda(saldo_anterior)
+        pagamento["saldo_anterior_numero"] = saldo_anterior
+        pagamento["total"] = formatar_moeda(valor_total_acumulado)
 
         if not pagamento["inquilino_nome"]:
             pagamento["inquilino_nome"] = "Sem inquilino"
@@ -222,10 +318,10 @@ def pagina_pagamentos(
             total_recebido += valor_pago
 
         elif status_calculado == "atrasado":
-            total_atrasado += valor_cobrado
+            total_atrasado += valor_total_acumulado
 
         else:
-            total_pendente += valor_cobrado
+            total_pendente += valor_total_acumulado
 
     return templates.TemplateResponse(request, "pagamentos.html", {
         "titulo": "Pagamentos",
@@ -434,17 +530,50 @@ def editar_pagamento(
 def pagar_pagamento(pagamento_id: int):
     with get_connection() as conn:
         pagamento = conn.execute("""
-            SELECT mes_referencia
+            SELECT
+                id,
+                contrato_id,
+                mes_referencia
             FROM pagamentos
             WHERE id = ?
         """, (pagamento_id,)).fetchone()
 
-    marcar_pagamento_como_pago(pagamento_id)
+        if not pagamento:
+            return redirect_to("/pagamentos")
 
-    if pagamento:
-        return redirect_to(f"/pagamentos?mes={pagamento['mes_referencia']}")
+        pagamentos_em_aberto = conn.execute("""
+            SELECT
+                id,
+                valor_cobrado
+            FROM pagamentos
+            WHERE contrato_id = ?
+            AND status != 'pago'
+            AND mes_referencia <= ?
+            ORDER BY mes_referencia ASC
+        """, (
+            pagamento["contrato_id"],
+            pagamento["mes_referencia"],
+        )).fetchall()
 
-    return redirect_to("/pagamentos")
+        hoje = date.today().isoformat()
+
+        for item in pagamentos_em_aberto:
+            conn.execute("""
+                UPDATE pagamentos
+                SET
+                    valor_pago = ?,
+                    data_pagamento = ?,
+                    status = 'pago'
+                WHERE id = ?
+            """, (
+                item["valor_cobrado"],
+                hoje,
+                item["id"],
+            ))
+
+        conn.commit()
+
+    return redirect_to(f"/pagamentos?mes={pagamento['mes_referencia']}")
 
 
 @router.post("/pagamentos/{pagamento_id}/deletar")
@@ -535,7 +664,7 @@ def gerar_relatorio_pagamentos(
             WHERE p.status = 'pago'
             AND p.mes_referencia BETWEEN ? AND ?
             ORDER BY p.mes_referencia ASC, p.data_pagamento ASC
-        """, (mes_inicio, mes_fim)).fetchall())
+        """, (mes_inicio, mes_fim)).fetchall()) 
 
     total_recebido = sum(float(p["valor_pago"] or 0) for p in pagamentos)
 

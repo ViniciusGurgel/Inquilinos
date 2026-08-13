@@ -46,13 +46,19 @@ def montar_url_imoveis(condominio_id=None, detalhe_id=None, aba=None, busca=None
     return "/imoveis"
 
 
-def buscar_imoveis(conn, busca="", condominio_id=None):
+def buscar_imoveis(conn, busca="", condominio_id=None, filtro_status="todos"):
     parametros = []
     filtros = []
 
     if condominio_id:
         filtros.append("i.condominio_id = ?")
         parametros.append(condominio_id)
+
+    if filtro_status == "disponivel":
+        filtros.append("ct.id IS NULL")
+
+    if filtro_status == "ocupado":
+        filtros.append("ct.id IS NOT NULL")
 
     if busca:
         termo = f"%{busca}%"
@@ -74,6 +80,7 @@ def buscar_imoveis(conn, busca="", condominio_id=None):
             i.tipo,
             i.endereco,
             i.status,
+            i.valor_aluguel,
             i.condominio_id,
             c.nome AS condominio_nome,
             MAX(iq.nome) AS inquilino_nome,
@@ -98,6 +105,7 @@ def buscar_imoveis(conn, busca="", condominio_id=None):
             i.endereco,
             i.status,
             i.condominio_id,
+            i.valor_aluguel,
             c.nome
         ORDER BY i.nome
     """
@@ -112,6 +120,7 @@ def buscar_imovel_detalhe(conn, imovel_id):
             i.nome,
             i.tipo,
             i.endereco,
+            i.valor_aluguel,
             i.status,
             i.condominio_id,
             c.nome AS condominio_nome,
@@ -148,8 +157,13 @@ def pagina_imoveis(
     condominio_id: int | None = Query(default=None),
     detalhe_id: int | None = Query(default=None),
     aba: str = Query(default="info"),
+    status: str = Query(default="todos"),
 ):
+
     templates = request.app.state.templates
+
+    if status not in ("todos", "disponivel", "ocupado"):
+        status = "todos"
 
     if aba not in ("info", "fotos"):
         aba = "info"
@@ -183,6 +197,7 @@ def pagina_imoveis(
             conn=conn,
             busca=busca,
             condominio_id=condominio_id,
+            filtro_status=status,
         )
 
         imovel_detalhe = None
@@ -219,6 +234,7 @@ def pagina_imoveis(
         "fotos_imovel": fotos_imovel,
         "aba_detalhe": aba,
         "voltar_url": voltar_url,
+        "filtro_status": status,
     })
 
 
@@ -227,6 +243,7 @@ def criar_imovel(
     nome: str = Form(...),
     tipo: str = Form(...),
     endereco: str = Form(...),
+    valor_aluguel: float = Form(...),
     condominio_id: str = Form(default="")
 ):
     condominio_id_final = int(condominio_id) if condominio_id else None
@@ -237,14 +254,16 @@ def criar_imovel(
                 nome,
                 tipo,
                 endereco,
+                valor_aluguel,
                 status,
                 condominio_id
             )
-            VALUES (?, ?, ?, 'disponivel', ?)
+            VALUES (?, ?, ?, ?, 'disponivel', ?)
         """, (
             nome,
             tipo,
             endereco,
+            valor_aluguel,
             condominio_id_final,
         ))
 
@@ -259,6 +278,7 @@ def editar_imovel(
     nome: str = Form(...),
     tipo: str = Form(...),
     endereco: str = Form(...),
+    valor_aluguel: float = Form(...),
     condominio_id: str = Form(default="")
 ):
     condominio_id_final = int(condominio_id) if condominio_id else None
@@ -270,12 +290,14 @@ def editar_imovel(
                 nome = ?,
                 tipo = ?,
                 endereco = ?,
+                valor_aluguel = ?,
                 condominio_id = ?
             WHERE id = ?
         """, (
             nome,
             tipo,
             endereco,
+            valor_aluguel,
             condominio_id_final,
             imovel_id,
         ))

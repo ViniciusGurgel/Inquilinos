@@ -82,12 +82,25 @@ def pagina_dashboard(request: Request):
             )
         """).fetchone()[0]
 
+        perda_vacancia = conn.execute("""
+            SELECT COALESCE(SUM(i.valor_aluguel), 0)
+            FROM imoveis i
+            WHERE NOT EXISTS (
+                SELECT 1
+                FROM contratos c
+                WHERE c.imovel_id = i.id
+                AND c.status = 'ativo'
+            )
+        """).fetchone()[0]
+
         receita_mensal = conn.execute("""
             SELECT COALESCE(SUM(valor_pago), 0)
             FROM pagamentos
             WHERE status = 'pago'
-            AND substr(data_pagamento, 1, 7) = ?
+            AND mes_referencia = ?
         """, (mes_atual,)).fetchone()[0]
+
+        dez_porcento_receita = receita_mensal * 0.10
 
         pagamentos = rows_to_list(conn.execute("""
             SELECT
@@ -104,8 +117,9 @@ def pagina_dashboard(request: Request):
             FROM pagamentos p
             LEFT JOIN inquilinos i ON i.id = p.inquilino_id
             LEFT JOIN imoveis im ON im.id = p.imovel_id
+            WHERE p.mes_referencia = ?
             ORDER BY p.data_vencimento ASC
-        """).fetchall())
+        """, (mes_atual,)).fetchall())
 
         imoveis_disponiveis = rows_to_list(conn.execute("""
             SELECT
@@ -183,6 +197,11 @@ def pagina_dashboard(request: Request):
         "imoveis_disponiveis": imoveis_disponiveis,
         "vencimentos": vencimentos,
         "interessados": interessados,
+        "perda_vacancia": perda_vacancia,
+        "perda_vacancia_formatada": formatar_moeda(perda_vacancia),
+
+        "dez_porcento_receita": dez_porcento_receita,
+        "dez_porcento_receita_formatado": formatar_moeda(dez_porcento_receita),
     })
 
 

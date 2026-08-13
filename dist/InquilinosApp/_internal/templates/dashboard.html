@@ -37,7 +37,7 @@
     <div class="stats-card">
       <div class="stats-info">
         <span>Receita Mensal</span>
-        <strong>{{ receita_mensal }}</strong>
+        <strong>{{ receita_mensal_formatada }}</strong>
       </div>
 
       <div class="stats-icon stats-green">
@@ -106,9 +106,19 @@
           <strong class="text-danger">{{ pagamentos_atrasados }}</strong>
         </div>
 
+        <div class="summary-row">
+          <span>Perda com Vacância</span>
+          <strong class="vacancy">{{ perda_vacancia_formatada }}</strong>
+        </div>
+
         <div class="resumo-total">
           <span>Receita do Mês</span>
-          <strong class="text-success">{{ receita_mensal }}</strong>
+          <strong class="text-success">{{ receita_mensal_formatada }}</strong>
+        </div>
+
+        <div class="summary-row">
+          <span>10% da Receita</span>
+          <strong class="maintenance">{{ dez_porcento_receita_formatado }}</strong>
         </div>
       </div>
     </section>

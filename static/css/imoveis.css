@@ -1045,3 +1045,62 @@ input[type="number"] {
     grid-template-columns: 1fr;
   }
 }
+
+.condominio-name-form {
+  position: relative;
+}
+
+.condominio-name-view {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.condominio-name-view h1 {
+  margin: 0;
+}
+
+.edit-condominio-name-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+}
+
+.edit-condominio-name-button:hover {
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--text);
+}
+
+.edit-condominio-name-button svg {
+  width: 17px;
+  height: 17px;
+}
+
+.condominio-name-input {
+  display: none;
+  width: min(420px, 100%);
+  height: 42px;
+  padding: 0 12px;
+  border: 1px solid var(--primary);
+  border-radius: 8px;
+  outline: none;
+  background: #111b2c;
+  color: var(--text);
+  font-size: 30px;
+  font-weight: 700;
+}
+
+.condominio-name-form.is-editing .condominio-name-view {
+  display: none;
+}
+
+.condominio-name-form.is-editing .condominio-name-input {
+  display: block;
+}
